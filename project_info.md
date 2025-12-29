@@ -108,7 +108,7 @@ root/
 
 ### 功能 B：视觉定位 (Visual Positioning - AI)
 
-* **业务逻辑**：
+* **业务逻辑（用多模态rag直接另做修改不用看）**：
 
 1. 用户调用接口 `POST /api/v1/recognize` 上传图片。
 2. 后端接收图片。
