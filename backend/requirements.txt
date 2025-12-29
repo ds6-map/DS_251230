@@ -1,0 +1,29 @@
+# FastAPI 核心
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# 数据库
+sqlalchemy[asyncio]==2.0.25
+asyncpg==0.29.0
+alembic==1.13.1
+
+# 数据校验
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# 图像处理
+Pillow==10.2.0
+
+# AI/机器学习 (暂时注释，后续启用)
+# sentence-transformers==2.2.2
+# transformers==4.36.2
+# torch==2.1.2
+# faiss-cpu==1.7.4
+# paddleocr==2.7.0.3
+# paddlepaddle==2.6.0
+
+# 工具
+aiofiles==23.2.1
+python-jose==3.3.0
+

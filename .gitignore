@@ -1,0 +1,20 @@
+# --- Python 忽略项 ---
+__pycache__/
+*.py[cod]
+venv/
+.env             # 存数据库密码
+api_keys.txt     # 如果有存key的文件
+
+# --- 前端/Node 忽略项 ---
+node_modules/    # 体积
+dist/            # 打包生成
+npm-debug.log*
+yarn-error.log*
+
+# --- 编辑器/系统 垃圾文件 ---
+.idea/           # Pycharm生成的配置
+.vscode/         # VSCode生成的配置
+.DS_Store        # Mac系统的垃圾文件
+
+# --- 个人私有文件  ---
+project1230/          
