@@ -77,6 +77,21 @@ const loadImage = () => {
   img.src = props.mapInfo.image_url
 }
 
+// 获取节点的显示坐标（没有坐标的节点默认放在地图中心）
+const getNodeDisplayCoords = (node: NodeInfo) => {
+  const hasCoords = node.x !== null && node.x !== undefined && 
+                    node.y !== null && node.y !== undefined
+  
+  if (hasCoords) {
+    return { x: node.x!, y: node.y!, hasCoords: true }
+  }
+  
+  // 没有坐标的节点，默认放在地图中心
+  const centerX = (props.mapInfo.width || 300) / 2
+  const centerY = (props.mapInfo.height || 300) / 2
+  return { x: centerX, y: centerY, hasCoords: false }
+}
+
 // 绘制画布
 const draw = () => {
   const canvas = canvasRef.value
@@ -102,13 +117,10 @@ const draw = () => {
   
   // 绘制节点
   for (const node of props.nodes) {
-    if (node.x === null || node.x === undefined || 
-        node.y === null || node.y === undefined) {
-      continue
-    }
+    const { x: nodeX, y: nodeY, hasCoords } = getNodeDisplayCoords(node)
     
-    const x = node.x * s
-    const y = node.y * s
+    const x = nodeX * s
+    const y = nodeY * s
     
     // 节点样式
     const isSelected = node.id === props.selectedNodeId
@@ -119,11 +131,13 @@ const draw = () => {
     ctx.arc(x, y, NODE_RADIUS, 0, Math.PI * 2)
     
     if (isDraggingThis) {
-      ctx.fillStyle = '#ff9800'
+      ctx.fillStyle = '#ff9800'  // 拖拽中 - 橙色
     } else if (isSelected) {
-      ctx.fillStyle = '#1989fa'
+      ctx.fillStyle = '#1989fa'  // 选中 - 蓝色
+    } else if (!hasCoords) {
+      ctx.fillStyle = '#ee0a24'  // 未定位 - 红色
     } else {
-      ctx.fillStyle = '#07c160'
+      ctx.fillStyle = '#07c160'  // 已定位 - 绿色
     }
     
     ctx.fill()
@@ -132,6 +146,17 @@ const draw = () => {
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 2
     ctx.stroke()
+    
+    // 未定位的节点绘制虚线边框提示
+    if (!hasCoords && !isDraggingThis) {
+      ctx.beginPath()
+      ctx.arc(x, y, NODE_RADIUS + 4, 0, Math.PI * 2)
+      ctx.strokeStyle = '#ee0a24'
+      ctx.lineWidth = 1
+      ctx.setLineDash([3, 3])
+      ctx.stroke()
+      ctx.setLineDash([])
+    }
     
     // 绘制节点名称
     ctx.font = '12px sans-serif'
@@ -159,13 +184,10 @@ const findNodeAtPosition = (screenX: number, screenY: number): NodeInfo | null =
   const hitRadius = NODE_RADIUS / scale.value + 5
   
   for (const node of props.nodes) {
-    if (node.x === null || node.x === undefined || 
-        node.y === null || node.y === undefined) {
-      continue
-    }
+    const { x: nodeX, y: nodeY } = getNodeDisplayCoords(node)
     
-    const dx = node.x - x
-    const dy = node.y - y
+    const dx = nodeX - x
+    const dy = nodeY - y
     const distance = Math.sqrt(dx * dx + dy * dy)
     
     if (distance <= hitRadius) {
@@ -190,9 +212,10 @@ const handlePointerDown = (e: MouseEvent | TouchEvent) => {
     draggingNodeId.value = node.id
     
     const { x, y } = screenToMap(clientX, clientY)
+    const { x: nodeX, y: nodeY } = getNodeDisplayCoords(node)
     dragOffset.value = {
-      x: (node.x || 0) - x,
-      y: (node.y || 0) - y,
+      x: nodeX - x,
+      y: nodeY - y,
     }
     
     e.preventDefault()
