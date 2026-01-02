@@ -59,8 +59,14 @@ def do_run_migrations(connection: Connection) -> None:
 
 async def run_async_migrations() -> None:
     """异步迁移"""
+    configuration = config.get_section(config.config_ini_section, {})
+    
+    # SQLite 需要特殊配置
+    if "sqlite" in settings.DATABASE_URL:
+        configuration["sqlalchemy.connect_args"] = {"check_same_thread": False}
+    
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

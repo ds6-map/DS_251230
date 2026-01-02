@@ -51,8 +51,11 @@ export const useNavigationStore = defineStore('navigation', () => {
     }
     
     try {
+      console.log('🔍 搜索关键词:', keyword)
       const response = await searchNodes(keyword)
+      console.log('✅ 搜索结果:', response)
       searchResults.value = response.nodes
+      console.log('📊 结果数量:', response.nodes.length)
     } catch (e) {
       console.error('Search failed:', e)
       searchResults.value = []

@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
     
-    # 数据库配置
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/campus_nav"
+    # 数据库配置 (SQLite - 无需安装，文件数据库)
+    DATABASE_URL: str = "sqlite+aiosqlite:///./data/campus_nav.db"
     
     # 文件存储配置
     UPLOAD_DIR: str = "data/maps"

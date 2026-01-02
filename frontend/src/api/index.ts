@@ -22,11 +22,13 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
   (response) => {
+    console.log('📥 API 响应:', response)
     return response.data
   },
   (error) => {
     const message = error.response?.data?.detail || error.message || '请求失败'
-    console.error('API Error:', message)
+    console.error('❌ API Error:', error)
+    console.error('❌ Error message:', message)
     return Promise.reject(new Error(message))
   }
 )

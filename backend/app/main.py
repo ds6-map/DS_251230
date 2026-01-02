@@ -24,9 +24,19 @@ async def lifespan(app: FastAPI):
     # 启动时执行
     print("🚀 正在启动应用...")
     
+    # 确保数据目录存在
+    os.makedirs("data", exist_ok=True)
+    
     # 初始化数据库
-    await init_db()
-    print("✅ 数据库初始化完成")
+    try:
+        await init_db()
+        print("✅ 数据库初始化完成")
+    except Exception as e:
+        print(f"⚠️  数据库初始化失败: {e}")
+        if settings.DEBUG:
+            print("⚠️  应用将继续运行，但数据库功能可能不可用")
+        else:
+            raise
     
     # 创建上传目录
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)

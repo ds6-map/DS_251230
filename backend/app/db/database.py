@@ -7,10 +7,17 @@ from sqlalchemy.orm import declarative_base
 from app.core.config import settings
 
 # 创建异步引擎
+# SQLite 需要特殊配置
+connect_args = {}
+if "sqlite" in settings.DATABASE_URL:
+    # SQLite 异步模式需要禁用检查相同线程
+    connect_args = {"check_same_thread": False}
+
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
     future=True,
+    connect_args=connect_args,
 )
 
 # 创建异步 Session 工厂
@@ -40,6 +47,14 @@ async def get_db() -> AsyncSession:
 
 async def init_db():
     """初始化数据库表"""
+    import os
+    # 确保数据目录存在
+    db_path = settings.DATABASE_URL.replace("sqlite+aiosqlite:///", "")
+    if db_path.startswith("./"):
+        db_dir = os.path.dirname(db_path)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
+    
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 

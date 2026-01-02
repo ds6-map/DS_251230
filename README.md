@@ -15,7 +15,7 @@
 ### 后端
 
 - FastAPI (异步框架)
-- PostgreSQL + SQLAlchemy Async
+- SQLite + SQLAlchemy Async (文件数据库，无需安装)
 - Alembic (数据库迁移)
 - Pydantic V2 (数据校验)
 - A* 算法 (路径规划)
@@ -62,7 +62,7 @@
 
 - Python 3.10+
 - Node.js 18+
-- PostgreSQL 14+
+- SQLite 3（Python 内置，无需单独安装）
 
 ### 后端启动
 
@@ -77,11 +77,9 @@ source venv/bin/activate  # Linux/Mac
 # 安装依赖
 pip install -r requirements.txt
 
-# 配置环境变量（创建 .env 文件）
-# DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/campus_nav
-
-# 初始化数据库（首次运行）
-# 需要先创建数据库：CREATE DATABASE campus_nav;
+# 配置环境变量（可选，创建 .env 文件）
+# DATABASE_URL=sqlite+aiosqlite:///./data/campus_nav.db
+# 默认使用 SQLite，无需额外配置
 
 # 导入地图数据
 python scripts/import_map_data.py ../campus_map.json --clear
