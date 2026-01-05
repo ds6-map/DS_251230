@@ -1,0 +1,17 @@
+# API 密钥配置文件
+# 复制此文件为 key.py 并填入你的密钥
+# 注意：key.py 已在 .gitignore 中，不会被提交到 Git
+
+# OpenAI API 配置
+openai_api_key = "sk-your-openai-api-key-here"
+base_url = "https://api.openai.com/v1"  # 可选，默认使用官方 API
+
+# Google Maps API 配置
+google_api_key = "AIza-your-google-maps-api-key-here"
+
+# 注意：
+# 1. 数据库配置：使用 SQLite，无需额外配置，数据库文件会自动创建在 data/campus_nav.db
+# 2. 向量化配置：使用 ChromaDB，数据会自动存储在 chroma/ 目录
+# 3. 图片数据：放在 image_data/ 目录下，按楼层和区域组织
+# 4. 大模型链接：通过 base_url 配置，支持自定义 OpenAI 兼容的 API 端点
+

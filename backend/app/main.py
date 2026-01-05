@@ -7,6 +7,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+import logging
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 from app.core.config import settings
 from app.db import init_db, close_db
@@ -83,6 +91,10 @@ if os.path.exists(settings.UPLOAD_DIR):
 
 # 注册 API 路由
 app.include_router(api_router, prefix="/api/v1")
+
+# 注册 Agent Chat API（无前缀，兼容 add 项目）
+from app.api.endpoints import chat
+app.include_router(chat.router, prefix="/api")
 
 
 @app.get("/")

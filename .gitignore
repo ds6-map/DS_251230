@@ -4,6 +4,7 @@ __pycache__/
 venv/
 .env             # 存数据库密码
 api_keys.txt     # 如果有存key的文件
+key.py           # API 密钥文件（敏感信息）
 
 # --- 前端/Node 忽略项 ---
 node_modules/    # 体积

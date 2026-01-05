@@ -22,14 +22,50 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
   (response) => {
-    console.log('📥 API 响应:', response)
+    const { data, status, config } = response
+    console.log('📥 API 响应:', {
+      url: config?.url,
+      method: config?.method?.toUpperCase(),
+      status,
+      statusText: response.statusText,
+      data: data,
+      timestamp: new Date().toISOString()
+    })
+    
+    // 如果是识别响应，输出详细信息
+    if (config?.url?.includes('/recognition')) {
+      console.log('🔍 [识别响应详情]', {
+        success: data?.success,
+        method: data?.method,
+        candidates_count: data?.candidates?.length || 0,
+        message: data?.message,
+        debug_info: data?.debug_info,
+        candidates: data?.candidates?.map((c: any, i: number) => 
+          `[${i+1}] ${c.node_name} (楼层: ${c.floor}, 置信度: ${c.confidence})`
+        )
+      })
+    }
+    
     return response.data
   },
   (error) => {
-    const message = error.response?.data?.detail || error.message || '请求失败'
-    console.error('❌ API Error:', error)
-    console.error('❌ Error message:', message)
-    return Promise.reject(new Error(message))
+    const { response, config, message } = error
+    const errorDetail = {
+      url: config?.url,
+      method: config?.method?.toUpperCase(),
+      status: response?.status,
+      statusText: response?.statusText,
+      error_message: response?.data?.detail || message || '请求失败',
+      error_data: response?.data,
+      timestamp: new Date().toISOString()
+    }
+    
+    console.error('❌ API Error:', errorDetail)
+    if (response?.data) {
+      console.error('❌ Error Response Data:', response.data)
+    }
+    
+    return Promise.reject(new Error(errorDetail.error_message))
   }
 )
 
@@ -111,6 +147,12 @@ export interface RecognitionResponse {
   candidates: LocationCandidate[]
   message: string
   method: string
+  debug_info?: {
+    node_count?: number
+    image_size?: number
+    mode?: string
+    candidates_count?: number
+  }
 }
 
 // 识别位置

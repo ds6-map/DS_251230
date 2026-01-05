@@ -15,13 +15,24 @@ pydantic-settings==2.1.0
 # 图像处理
 Pillow==10.2.0
 
-# AI/机器学习 (暂时注释，后续启用)
+# AI/机器学习
+# 图片识别功能所需依赖（可选，如果不需要图片识别可以不安装）
+chromadb==0.3.23
+langchain-experimental==0.4.1
+open-clip-torch==3.2.0
+torch==2.1.2  # 如果安装失败，可以尝试 torch==2.0.0 或使用 CPU 版本
+torchvision==0.16.2
+
+# 其他 AI 依赖（暂时注释，后续启用）
 # sentence-transformers==2.2.2
 # transformers==4.36.2
-# torch==2.1.2
 # faiss-cpu==1.7.4
 # paddleocr==2.7.0.3
 # paddlepaddle==2.6.0
+
+# Agent Chat 功能所需依赖
+openai==2.14.0
+googlemaps==4.10.0
 
 # 工具
 aiofiles==23.2.1

@@ -21,6 +21,7 @@ class RecognitionResponse(BaseModel):
     candidates: List[LocationCandidate] = Field(..., description="候选位置列表，按置信度降序")
     message: str = "识别完成"
     method: str = Field("mock", description="识别方法：mock/ocr/clip")
+    debug_info: Optional[dict] = Field(None, description="调试信息（开发模式）")
 
 
 class RecognitionErrorResponse(BaseModel):

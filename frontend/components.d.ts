@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AgentChat: typeof import('./src/components/AgentChat.vue')['default']
     MapCanvas: typeof import('./src/components/MapCanvas.vue')['default']
     NavigationMap: typeof import('./src/components/NavigationMap.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -22,5 +23,6 @@ declare module 'vue' {
     VanSearch: typeof import('vant/es')['Search']
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
+    ZoomableMapCanvas: typeof import('./src/components/ZoomableMapCanvas.vue')['default']
   }
 }

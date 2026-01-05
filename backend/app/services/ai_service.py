@@ -84,29 +84,39 @@ class AIService:
         Mock 识别实现
         随机返回一些节点作为候选结果
         """
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        logger.info(f"🎲 [Mock识别] 开始 Mock 识别，请求 top_k={top_k}")
+        
         all_nodes = graph_service.get_all_nodes()
+        logger.info(f"📊 [Mock识别] 图中共有 {len(all_nodes)} 个节点")
         
         if not all_nodes:
-            # 如果没有节点数据，返回空列表
+            logger.warning("⚠️ [Mock识别] 图结构中没有节点数据")
             return []
         
         # 随机选择节点
         sample_size = min(top_k, len(all_nodes))
         selected_nodes = random.sample(all_nodes, sample_size)
+        logger.info(f"🎯 [Mock识别] 随机选择了 {sample_size} 个节点")
         
         # 生成随机置信度（按降序排列）
         confidences = sorted([random.uniform(0.5, 0.95) for _ in range(sample_size)], reverse=True)
         
         candidates = []
         for i, node in enumerate(selected_nodes):
-            candidates.append(LocationCandidate(
+            candidate = LocationCandidate(
                 node_id=node["id"],
                 node_name=node["name"],
                 detail=node.get("detail"),
                 floor=node["floor"],
                 confidence=round(confidences[i], 2),
-            ))
+            )
+            candidates.append(candidate)
+            logger.info(f"  [{i+1}] 节点: {node['name']} (ID: {node['id']}, 楼层: {node['floor']}, 置信度: {candidate.confidence})")
         
+        logger.info(f"✅ [Mock识别] 完成，返回 {len(candidates)} 个候选结果")
         return candidates
     
     async def _extract_image_features(self, image_data: bytes):
