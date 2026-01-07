@@ -57,9 +57,11 @@ def get_settings() -> Settings:
 settings = get_settings()
 
 # 尝试从 key.py 加载密钥（兼容 add 项目）
-_PROJECT_ROOT = Path(__file__).resolve().parents[2]
-_PARENT_ROOT = _PROJECT_ROOT.parent
-for _p in (str(_PROJECT_ROOT), str(_PARENT_ROOT)):
+# config.py 位于 backend/app/core/config.py
+# parents[2] = backend, parents[3] = 项目根目录 (12.5_导航)
+_PROJECT_ROOT = Path(__file__).resolve().parents[3]  # 12.5_导航
+_BACKEND_ROOT = Path(__file__).resolve().parents[2]  # backend
+for _p in (str(_PROJECT_ROOT), str(_BACKEND_ROOT)):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
@@ -86,10 +88,17 @@ def _get_api_keys():
             _cached_openai_base = _base_url or None
         except (ImportError, AttributeError):
             _cached_openai_base = None
-    except Exception:
+    except Exception as e:
         _cached_openai_key = ""
         _cached_gmaps_key = ""
         _cached_openai_base = None
+        if settings.DEBUG:
+            print(f"[config] 无法从 key.py 读取密钥: {e}")
+    
+    if settings.DEBUG and (_cached_openai_key or _cached_gmaps_key):
+        print(f"[config] 从 key.py 读取密钥: openai_key={'已设置' if _cached_openai_key else '未设置'}, "
+              f"base_url={'已设置' if _cached_openai_base else '未设置'}, "
+              f"gmaps_key={'已设置' if _cached_gmaps_key else '未设置'}")
     
     return _cached_openai_key, _cached_gmaps_key, _cached_openai_base
 
@@ -102,23 +111,34 @@ def get_openai_client():
         api_key = settings.OPENAI_API_KEY or ""
         base_url = settings.OPENAI_API_BASE or ""
         
-        if not api_key or not base_url:
-            # 尝试从 key.py 读取
-            key_from_file, _, base_from_file = _get_api_keys()
-            if not api_key:
-                api_key = key_from_file
-            if not base_url and base_from_file:
-                base_url = base_from_file
+        # 如果环境变量中没有配置，尝试从 key.py 读取
+        if not api_key:
+            key_from_file, _, _ = _get_api_keys()
+            api_key = key_from_file
+        
+        if not base_url:
+            _, _, base_from_file = _get_api_keys()
+            base_url = base_from_file or ""
         
         if not api_key:
+            if settings.DEBUG:
+                print("[config] OpenAI API key 未配置")
             return None
         
-        return OpenAI(api_key=api_key, base_url=base_url if base_url else None)
+        # 如果 base_url 为空，使用 None（OpenAI 官方 API）
+        client = OpenAI(api_key=api_key, base_url=base_url if base_url else None)
+        
+        if settings.DEBUG:
+            print(f"[config] OpenAI 客户端已创建: base_url={base_url or '官方API'}")
+        
+        return client
     except ImportError:
+        if settings.DEBUG:
+            print("[config] openai 包未安装")
         return None
     except Exception as e:
         if settings.DEBUG:
-            print(f"Failed to create OpenAI client: {e}")
+            print(f"[config] 创建 OpenAI 客户端失败: {e}")
         return None
 
 
