@@ -35,10 +35,7 @@ const selectDestination = (node: PathNode) => {
   showSearchPopup.value = false
   searchKeyword.value = ''
   store.searchResults = []
-  
-  if (store.currentLocation) {
-    startNavigation()
-  }
+  // 不再自动跳转，让用户手动点击"开始导航"按钮
 }
 
 // 选择搜索结果作为起点
@@ -152,12 +149,18 @@ const openDestinationSelection = () => {
     <header class="nav-toolbar">
       <div class="toolbar-brand">
         <div class="brand-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10" opacity="0.3"/>
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" stroke="none"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
           </svg>
         </div>
         <h1 class="brand-title">室内导航</h1>
+        <button class="photo-btn" @click="takePhoto" title="拍照定位">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </button>
       </div>
       
       <div class="route-selector">
@@ -168,14 +171,16 @@ const openDestinationSelection = () => {
             <span class="input-label">起点</span>
             <span class="input-value">{{ currentLocationName }}</span>
           </div>
-          <svg class="input-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="input-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 18l6-6-6-6"/>
           </svg>
         </div>
         
-        <!-- 路线连接器 -->
-        <div class="route-connector">
-          <div class="connector-line"></div>
+        <!-- 连接箭头 -->
+        <div class="route-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
         </div>
         
         <!-- 终点 -->
@@ -187,7 +192,7 @@ const openDestinationSelection = () => {
               {{ store.destination ? `${store.destination.name} (${store.destination.floor}楼)` : '点击设置终点' }}
             </span>
           </div>
-          <svg class="input-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="input-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 18l6-6-6-6"/>
           </svg>
         </div>
@@ -195,19 +200,11 @@ const openDestinationSelection = () => {
       
       <!-- 操作按钮 -->
       <div class="toolbar-actions">
-        <button class="action-btn" @click="takePhoto">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-          </svg>
-          拍照定位
-        </button>
         <button
-          v-if="store.currentLocation && store.destination"
           class="action-btn primary"
           @click="startNavigation"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="3 11 22 2 13 21 11 13 3 11"/>
           </svg>
           开始导航
@@ -331,62 +328,92 @@ const openDestinationSelection = () => {
 /* ========== 顶部工具栏 ========== */
 .nav-toolbar {
   flex-shrink: 0;
-  padding: 20px;
-  background: rgba(21, 81, 80, 0.9);
+  padding: 10px 16px;
+  background: rgba(30, 35, 50, 0.9);
   backdrop-filter: blur(40px) saturate(150%);
   -webkit-backdrop-filter: blur(40px) saturate(150%);
-  border-bottom: 1px solid rgba(30, 123, 120, 0.3);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
 }
 
 .toolbar-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 10px;
+  justify-content: space-between;
 }
 
 .brand-icon {
-  width: 36px;
-  height: 36px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
   opacity: 0.9;
+  flex-shrink: 0;
 }
 
 .brand-title {
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 600;
   color: #ffffff;
   margin: 0;
   letter-spacing: -0.03em;
+  flex: 1;
+}
+
+.photo-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: rgba(30, 35, 50, 0.4);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.photo-btn:hover {
+  background: rgba(0, 229, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.photo-btn:active {
+  transform: scale(0.95);
 }
 
 /* ========== 路线选择器 ========== */
 .route-selector {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0;
-  margin-bottom: 20px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .location-input {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: rgba(21, 81, 80, 0.3);
-  border: 1px solid rgba(30, 123, 120, 0.3);
-  border-radius: 14px;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(30, 35, 50, 0.3);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
 }
 
 .location-input:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(21, 81, 80, 0.5);
+  border-color: rgba(0, 229, 255, 0.4);
 }
 
 .location-input:active {
@@ -394,20 +421,20 @@ const openDestinationSelection = () => {
 }
 
 .input-indicator {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .input-indicator.start {
-  background: #1E7B78;
-  box-shadow: 0 0 8px rgba(30, 123, 120, 0.4);
+  background: #8b95a8;
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
 }
 
 .input-indicator.end {
-  background: #27A5A2;
-  box-shadow: 0 0 8px rgba(39, 165, 162, 0.4);
+  background: #00e5ff;
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
 }
 
 .input-content {
@@ -418,15 +445,16 @@ const openDestinationSelection = () => {
 }
 
 .input-label {
-  font-size: 11px;
-  color: #1E7B78;
+  font-size: 10px;
+  color: #8b95a8;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  line-height: 1;
 }
 
 .input-value {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   color: #ffffff;
   overflow: hidden;
@@ -436,33 +464,30 @@ const openDestinationSelection = () => {
 }
 
 .input-arrow {
-  color: #1E7B78;
+  color: #8b95a8;
   flex-shrink: 0;
   transition: transform 0.2s;
 }
 
 .location-input:hover .input-arrow {
   transform: translateX(3px);
-  color: #27A5A2;
+  color: #00e5ff;
 }
 
-.route-connector {
+.route-arrow {
   display: flex;
   align-items: center;
-  padding-left: 22px;
-  height: 16px;
-}
-
-.connector-line {
-  width: 1px;
-  height: 100%;
-  background: linear-gradient(180deg, #1E7B78 0%, #155150 100%);
+  justify-content: center;
+  color: #8b95a8;
+  flex-shrink: 0;
+  padding: 0 4px;
 }
 
 /* ========== 操作按钮 ========== */
 .toolbar-actions {
   display: flex;
-  gap: 12px;
+  gap: 8px;
+  margin-top: 0;
 }
 
 .action-btn {
@@ -470,21 +495,21 @@ const openDestinationSelection = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 14px 18px;
-  font-size: 15px;
+  gap: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
   font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 10px;
+  background: rgba(30, 35, 50, 0.3);
   color: #ffffff;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .action-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(21, 81, 80, 0.5);
+  border-color: rgba(0, 229, 255, 0.4);
 }
 
 .action-btn:active {
@@ -492,15 +517,17 @@ const openDestinationSelection = () => {
 }
 
 .action-btn.primary {
-  background: #27A5A2;
+  background: #00e5ff;
   border: none;
   color: #000;
   font-weight: 600;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
 }
 
 .action-btn.primary:hover {
-  background: #1E7B78;
-  color: #fff;
+  background: #00d4ff;
+  color: #000;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.5);
 }
 
 /* ========== 聊天主区域 ========== */
@@ -509,7 +536,7 @@ const openDestinationSelection = () => {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 16px;
+  padding: 12px;
   overflow: hidden;
 }
 
@@ -518,7 +545,7 @@ const openDestinationSelection = () => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #0B2828;
+  background: #151b2e;
 }
 
 .popup-header {
@@ -526,8 +553,8 @@ const openDestinationSelection = () => {
   align-items: center;
   justify-content: space-between;
   padding: 22px 20px 18px;
-  background: rgba(21, 81, 80, 0.98);
-  border-bottom: 1px solid rgba(30, 123, 120, 0.3);
+  background: rgba(30, 35, 50, 0.98);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
 }
 
 .popup-title {
@@ -547,7 +574,7 @@ const openDestinationSelection = () => {
   border: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.06);
-  color: #1E7B78;
+  color: #8b95a8;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -563,8 +590,8 @@ const openDestinationSelection = () => {
   gap: 12px;
   margin: 18px 20px;
   padding: 16px 18px;
-  background: rgba(21, 81, 80, 0.6);
-  border: 1px solid rgba(30, 123, 120, 0.3);
+  background: rgba(30, 35, 50, 0.6);
+  border: 1px solid rgba(0, 229, 255, 0.2);
   border-radius: 14px;
   transition: all 0.2s;
 }
@@ -575,7 +602,7 @@ const openDestinationSelection = () => {
 }
 
 .search-icon {
-  color: #1E7B78;
+  color: #8b95a8;
   flex-shrink: 0;
 }
 
@@ -589,7 +616,7 @@ const openDestinationSelection = () => {
 }
 
 .search-input::placeholder {
-  color: #1E7B78;
+  color: #8b95a8;
 }
 
 .search-clear {
@@ -601,7 +628,7 @@ const openDestinationSelection = () => {
   border: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
-  color: #1E7B78;
+  color: #8b95a8;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -627,16 +654,16 @@ const openDestinationSelection = () => {
   align-items: center;
   gap: 14px;
   padding: 16px 18px;
-  background: rgba(21, 81, 80, 0.4);
-  border: 1px solid rgba(30, 123, 120, 0.2);
+  background: rgba(30, 35, 50, 0.4);
+  border: 1px solid rgba(0, 229, 255, 0.15);
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .result-item:hover {
-  background: rgba(21, 81, 80, 0.5);
-  border-color: rgba(30, 123, 120, 0.4);
+  background: rgba(30, 35, 50, 0.5);
+  border-color: rgba(0, 229, 255, 0.4);
   transform: translateX(4px);
 }
 
@@ -648,7 +675,7 @@ const openDestinationSelection = () => {
   justify-content: center;
   background: rgba(255, 255, 255, 0.06);
   border-radius: 12px;
-  color: #27A5A2;
+  color: #00e5ff;
   flex-shrink: 0;
 }
 
@@ -667,19 +694,19 @@ const openDestinationSelection = () => {
 
 .result-detail {
   font-size: 13px;
-  color: #1E7B78;
+  color: #8b95a8;
   margin-top: 2px;
 }
 
 .result-arrow {
-  color: #1E7B78;
+  color: #8b95a8;
   flex-shrink: 0;
   transition: transform 0.2s;
 }
 
 .result-item:hover .result-arrow {
   transform: translateX(3px);
-  color: #27A5A2;
+  color: #00e5ff;
 }
 
 .empty-results {
@@ -689,7 +716,7 @@ const openDestinationSelection = () => {
   justify-content: center;
   padding: 80px 20px;
   text-align: center;
-  color: #1E7B78;
+  color: #8b95a8;
 }
 
 .empty-icon {

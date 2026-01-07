@@ -15,10 +15,15 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      '@maps': resolve(__dirname, '../1.2_平面地图'),
     },
   },
   server: {
     port: 5173,
+    fs: {
+      // 允许访问项目外部的文件
+      allow: ['..'],
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
@@ -30,5 +35,7 @@ export default defineConfig({
       },
     },
   },
+  // 配置public目录
+  publicDir: 'public',
 })
 

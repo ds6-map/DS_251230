@@ -81,8 +81,18 @@ pip install -r requirements.txt
 # DATABASE_URL=sqlite+aiosqlite:///./data/campus_nav.db
 # 默认使用 SQLite，无需额外配置
 
-# 导入地图数据
+# 导入地图数据（单个文件）
 python scripts/import_map_data.py ../campus_map.json --clear
+
+# 批量导入多个地图文件（推荐）
+# 导入多个文件
+python scripts/import_map_data_batch.py ../project1230/campus_map.json ../project1230/campus_map_add.json --clear
+
+# 导入目录下所有 JSON 文件
+python scripts/import_map_data_batch.py ../project1230/ --clear
+
+# 使用通配符导入
+python scripts/import_map_data_batch.py ../project1230/*.json --clear
 
 # 启动服务
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -154,7 +164,9 @@ npm run dev
 
 ## 使用流程
 
-1. **导入节点和边数据**：运行 `import_map_data.py` 脚本
+1. **导入节点和边数据**：
+   - 单个文件：运行 `import_map_data.py` 脚本
+   - 多个文件：运行 `import_map_data_batch.py` 脚本（推荐，支持批量导入）
 2. **上传底图**：在编辑器页面上传各楼层的底图截图
 3. **标注节点位置**：在编辑器中拖拽节点到正确位置
 4. **使用导航**：在首页搜索目的地，开始导航

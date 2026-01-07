@@ -3,65 +3,68 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ========== 青绿色单色主题 - 基于色板 ========== */
+/* ========== 现代高级配色主题 - Cyber/Neon Style ========== */
 :root {
-  /* 色板颜色 */
-  --color-black: #000000;
-  --color-dark-1: #0B2828;
-  --color-dark-2: #155150;
-  --color-medium: #1E7B78;
-  --color-light: #27A5A2;
+  /* 基础色板 */
+  --color-black: #0a0e1f;
+  --color-dark-1: #151b2e;
+  --color-dark-2: #1e2332;
+  --color-medium: #2a3142;
+  --color-light: #3a4152;
   
-  /* 背景色 */
-  --bg: #000000;
-  --bg-soft: #0B2828;
-  --bg-muted: #0B2828;
-  --bg-elevated: #155150;
-  --bg-card: rgba(21, 81, 80, 0.85);
+  /* 背景色 - 深蓝紫调 */
+  --bg: #0a0e1f;
+  --bg-soft: #0f1419;
+  --bg-muted: #151b2e;
+  --bg-elevated: #1e2332;
+  --bg-card: rgba(30, 35, 50, 0.85);
   
-  /* 面板/卡片 */
-  --panel: rgba(21, 81, 80, 0.85);
-  --panel-solid: #155150;
-  --panel-border: rgba(30, 123, 120, 0.3);
-  --panel2: rgba(11, 40, 40, 0.9);
+  /* 面板/卡片 - 深蓝灰玻璃态 */
+  --panel: rgba(30, 35, 50, 0.85);
+  --panel-solid: #1e2332;
+  --panel-border: rgba(0, 229, 255, 0.2);
+  --panel2: rgba(21, 27, 46, 0.9);
   
   /* 文字颜色 */
   --text: #ffffff;
-  --text-secondary: #27A5A2;
-  --text-muted: #1E7B78;
-  --text-light: #155150;
-  --muted: #1E7B78;
+  --text-secondary: #00e5ff;
+  --text-muted: #8b95a8;
+  --text-light: #5a6478;
+  --muted: #8b95a8;
   
-  /* 主题色 - 青绿色 */
-  --primary: #27A5A2;
-  --primary-hover: #1E7B78;
-  --primary-light: rgba(39, 165, 162, 0.15);
-  --primary-soft: rgba(39, 165, 162, 0.1);
-  --primary-glow: 0 0 20px rgba(39, 165, 162, 0.3);
+  /* 主题色 - 霓虹青蓝 */
+  --primary: #00e5ff;
+  --primary-hover: #00d4ff;
+  --primary-light: rgba(0, 229, 255, 0.15);
+  --primary-soft: rgba(0, 229, 255, 0.1);
+  --primary-glow: 0 0 20px rgba(0, 229, 255, 0.4), 0 0 40px rgba(0, 229, 255, 0.2);
   
-  /* 辅助色 */
-  --accent-blue: #27A5A2;
-  --accent-subtle: #1E7B78;
+  /* 辅助色 - 青绿渐变 */
+  --accent-blue: #00e5ff;
+  --accent-cyan: #00ffc8;
+  --accent-subtle: #00d4ff;
   
-  /* 成功/警告/危险 - 基于色板调整 */
-  --success: #27A5A2;
-  --success-light: rgba(39, 165, 162, 0.15);
-  --warning: #1E7B78;
-  --warning-light: rgba(30, 123, 120, 0.15);
-  --danger: #155150;
-  --danger-light: rgba(21, 81, 80, 0.15);
+  /* 成功/警告/危险 - 现代配色 */
+  --success: #00ffc8;
+  --success-light: rgba(0, 255, 200, 0.15);
+  --warning: #ffb800;
+  --warning-light: rgba(255, 184, 0, 0.15);
+  --danger: #ff4757;
+  --danger-light: rgba(255, 71, 87, 0.15);
   
-  /* 边框 */
-  --border: rgba(30, 123, 120, 0.3);
-  --border-hover: rgba(39, 165, 162, 0.5);
+  /* 边框 - 青蓝光效 */
+  --border: rgba(0, 229, 255, 0.2);
+  --border-hover: rgba(0, 229, 255, 0.4);
+  --border-glow: rgba(0, 229, 255, 0.3);
   
-  /* 阴影 */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.7);
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow2: 0 4px 16px rgba(0, 0, 0, 0.4);
+  /* 阴影 - 增强深度感 */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.8);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 30px rgba(0, 229, 255, 0.3);
+  --shadow2: 0 4px 16px rgba(0, 0, 0, 0.5);
   
   /* 圆角 */
   --radius-sm: 8px;
@@ -126,7 +129,7 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(39, 165, 162, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.5), transparent);
   opacity: 0;
   transition: opacity var(--transition);
 }
@@ -397,7 +400,7 @@ body {
   }
 }
 
-/* 滚动条美化 - 青绿色主题 */
+/* 滚动条美化 - 霓虹青蓝主题 */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -408,12 +411,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(30, 123, 120, 0.4);
+  background: rgba(0, 229, 255, 0.3);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(39, 165, 162, 0.6);
+  background: rgba(0, 229, 255, 0.5);
 }
 
 /* 响应式适配 */
@@ -429,7 +432,7 @@ body {
   }
 }
 
-/* Vant 组件覆盖 - 青绿色主题 */
+/* Vant 组件覆盖 - 霓虹青蓝主题 */
 :deep(.van-nav-bar) {
   background: var(--bg-elevated) !important;
   border-bottom: 1px solid var(--panel-border) !important;
@@ -444,7 +447,7 @@ body {
 }
 
 :deep(.van-tabbar) {
-  background: rgba(11, 40, 40, 0.95) !important;
+  background: rgba(21, 27, 46, 0.95) !important;
   backdrop-filter: blur(40px) !important;
   border-top: 1px solid var(--panel-border) !important;
 }

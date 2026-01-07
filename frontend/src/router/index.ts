@@ -25,6 +25,12 @@ const routes: RouteRecordRaw[] = [
     name: 'MapEditor',
     component: () => import('@/views/MapEditor.vue'),
     meta: { title: '地图编辑器' }
+  },
+  {
+    path: '/map3d',
+    name: 'Map3D',
+    component: () => import('@/views/Map3DView.vue'),
+    meta: { title: '3D地图' }
   }
 ]
 

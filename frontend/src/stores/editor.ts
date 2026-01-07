@@ -112,11 +112,17 @@ export const useEditorStore = defineStore('editor', () => {
   function updateNodePositionLocal(nodeId: string, x: number, y: number) {
     pendingChanges.value.set(nodeId, { x, y })
     
-    // 更新本地节点数据
-    const node = nodes.value.find(n => n.id === nodeId)
-    if (node) {
-      node.x = x
-      node.y = y
+    // 更新本地节点数据（确保响应式更新）
+    const nodeIndex = nodes.value.findIndex(n => n.id === nodeId)
+    if (nodeIndex !== -1) {
+      // 创建新对象以触发响应式更新
+      const node = nodes.value[nodeIndex]
+      nodes.value[nodeIndex] = {
+        ...node,
+        x,
+        y,
+        has_coordinates: true,  // 确保标记为已定位
+      }
     }
   }
   

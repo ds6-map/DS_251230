@@ -31,16 +31,16 @@ const showNav = ref(true)
   background: rgba(11, 40, 40, 0.95) !important;
   backdrop-filter: blur(40px) saturate(150%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(150%) !important;
-  border-top: 1px solid rgba(30, 123, 120, 0.3) !important;
+  border-top: 1px solid rgba(0, 229, 255, 0.2) !important;
 }
 
 :deep(.van-tabbar-item) {
-  color: #1E7B78 !important;
+  color: #8b95a8 !important;
   background: transparent !important;
 }
 
 :deep(.van-tabbar-item--active) {
-  color: #27A5A2 !important;
+  color: #00e5ff !important;
 }
 
 :deep(.van-tabbar-item__icon) {

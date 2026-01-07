@@ -22,6 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   (e: 'node-drag-end', nodeId: string, x: number, y: number): void
+  (e: 'node-drag', nodeId: string, x: number, y: number): void  // 拖拽过程中实时更新
   (e: 'node-click', nodeId: string): void
 }>()
 
@@ -56,8 +57,8 @@ const lastPanOffset = ref({ x: 0, y: 0 })
 const lastTouchDistance = ref(0)
 const lastTouchCenter = ref({ x: 0, y: 0 })
 
-// 节点半径
-const NODE_RADIUS = 14
+// 节点半径（直径的1/3，原14改为5）
+const NODE_RADIUS = 5
 const PATH_LINE_WIDTH = 5
 
 // 图片加载
@@ -66,6 +67,10 @@ const imageLoaded = ref(false)
 
 // 容器尺寸
 const containerSize = ref({ width: 0, height: 0 })
+
+// 性能优化：使用 requestAnimationFrame 节流绘制
+let rafId: number | null = null
+const pendingDraw = ref(false)
 
 const updateContainerSize = () => {
   if (containerRef.value) {
@@ -187,8 +192,26 @@ const screenToWorld = (screenX: number, screenY: number) => {
   }
 }
 
-// 绘制画布
+// 绘制画布（使用 requestAnimationFrame 节流）
 const draw = () => {
+  if (rafId !== null) {
+    pendingDraw.value = true
+    return
+  }
+  
+  pendingDraw.value = false
+  rafId = requestAnimationFrame(() => {
+    rafId = null
+    if (pendingDraw.value) {
+      draw()
+      return
+    }
+    performDraw()
+  })
+}
+
+// 实际绘制函数
+const performDraw = () => {
   const canvas = canvasRef.value
   if (!canvas || !mapImage.value) return
   
@@ -202,13 +225,12 @@ const draw = () => {
   const { width: containerWidth, height: containerHeight } = containerSize.value
   if (!containerWidth || !containerHeight) return
   
-  // 设置画布尺寸（使用设备像素比以获得更高分辨率）
-  // 在高缩放级别时，使用更高的 DPR 倍数以保持清晰度
+  // 设置画布尺寸（限制 DPR 倍数以提高性能）
   const baseDpr = window.devicePixelRatio || 1
   const zoomLevel = viewState.value.zoom
-  // 当缩放超过 2 倍时，增加 DPR 倍数以保持清晰度
-  const dprMultiplier = zoomLevel > 2 ? Math.min(2, 1 + (zoomLevel - 2) * 0.3) : 1
-  const dpr = baseDpr * dprMultiplier
+  // 降低 DPR 倍数，避免高分辨率导致卡顿
+  const dprMultiplier = zoomLevel > 2 ? Math.min(1.5, 1 + (zoomLevel - 2) * 0.2) : 1
+  const dpr = Math.min(baseDpr * dprMultiplier, 2)  // 最大 DPR 限制为 2
   canvas.width = containerWidth * dpr
   canvas.height = containerHeight * dpr
   canvas.style.width = `${containerWidth}px`
@@ -219,9 +241,9 @@ const draw = () => {
   // 缩放上下文以匹配设备像素比
   ctx.scale(dpr, dpr)
   
-  // 启用高质量图像平滑
+  // 启用图像平滑（降低质量以提高性能）
   ctx.imageSmoothingEnabled = true
-  ctx.imageSmoothingQuality = 'high'  // 'low' | 'medium' | 'high'
+  ctx.imageSmoothingQuality = zoomLevel > 3 ? 'medium' : 'high'  // 高缩放时降低质量
   
   // 清空画布（深色背景）
   ctx.fillStyle = '#0a0a0a'
@@ -332,23 +354,23 @@ const draw = () => {
     
     // 绘制边框
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
-    ctx.lineWidth = 2
+    ctx.lineWidth = 1.5
     ctx.stroke()
     
     // 未定位的节点绘制脉冲动画边框
     if (!hasCoords && !isDraggingThis && props.editable) {
       ctx.beginPath()
-      ctx.arc(screenX, screenY, NODE_RADIUS + 6, 0, Math.PI * 2)
+      ctx.arc(screenX, screenY, NODE_RADIUS + 2, 0, Math.PI * 2)
       ctx.strokeStyle = 'rgba(142, 142, 147, 0.5)'
-      ctx.lineWidth = 2
-      ctx.setLineDash([4, 4])
+      ctx.lineWidth = 1.5
+      ctx.setLineDash([3, 3])
       ctx.stroke()
       ctx.setLineDash([])
     }
     
     // 起点/终点标签
     if (isStart || isEnd) {
-      ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif'
+      ctx.font = 'bold 9px -apple-system, BlinkMacSystemFont, sans-serif'
       ctx.fillStyle = isEnd ? '#000' : '#fff'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
@@ -357,12 +379,12 @@ const draw = () => {
     
     // 绘制节点名称（仅在编辑模式或选中时显示）
     if (props.editable || isSelected || isStart || isEnd) {
-      ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif'
+      ctx.font = 'bold 9px -apple-system, BlinkMacSystemFont, sans-serif'
       ctx.fillStyle = '#d1d1d6'
       ctx.textAlign = 'center'
       ctx.shadowColor = 'rgba(0, 0, 0, 0.8)'
-      ctx.shadowBlur = 4
-      ctx.fillText(node.id, screenX, screenY + NODE_RADIUS + 14)
+      ctx.shadowBlur = 3
+      ctx.fillText(node.id, screenX, screenY + NODE_RADIUS + 5)
       ctx.shadowBlur = 0
     }
   }
@@ -410,7 +432,7 @@ const drawZoomIndicator = (ctx: CanvasRenderingContext2D, width: number, height:
 const findNodeAtPosition = (canvasLocalX: number, canvasLocalY: number): NodeInfo | null => {
   const nodesToCheck = props.showPath ? [] : props.nodes
   
-  const hitRadius = NODE_RADIUS + 8  // 增大点击范围
+  const hitRadius = NODE_RADIUS + 3  // 增大点击范围（按比例缩小）
   
   for (const node of nodesToCheck) {
     const { x: nodeX, y: nodeY } = getNodeDisplayCoords(node)
@@ -449,7 +471,8 @@ const getTouchCenter = (touches: TouchList) => {
   }
 }
 
-// 鼠标滚轮缩放
+// 鼠标滚轮缩放（节流）
+let wheelTimeout: number | null = null
 const handleWheel = (e: WheelEvent) => {
   e.preventDefault()
   
@@ -473,7 +496,14 @@ const handleWheel = (e: WheelEvent) => {
   viewState.value.offsetY = mouseY - (mouseY - viewState.value.offsetY) * zoomChange
   viewState.value.zoom = newZoom
   
-  draw()
+  // 节流绘制：只在滚轮停止后绘制
+  if (wheelTimeout !== null) {
+    clearTimeout(wheelTimeout)
+  }
+  wheelTimeout = window.setTimeout(() => {
+    wheelTimeout = null
+    draw()
+  }, 16)  // 约 60fps
 }
 
 // 鼠标/触摸事件处理
@@ -532,9 +562,17 @@ const handlePointerMove = (e: MouseEvent | TouchEvent) => {
     const node = props.nodes.find(n => n.id === draggingNodeId.value)
     
     if (node) {
-      node.x = Math.max(0, Math.min(props.mapInfo.width || 0, worldPos.x + dragOffset.value.x))
-      node.y = Math.max(0, Math.min(props.mapInfo.height || 0, worldPos.y + dragOffset.value.y))
-      draw()
+      const newX = Math.max(0, Math.min(props.mapInfo.width || 0, worldPos.x + dragOffset.value.x))
+      const newY = Math.max(0, Math.min(props.mapInfo.height || 0, worldPos.y + dragOffset.value.y))
+      
+      // 更新节点位置（触发响应式更新）
+      node.x = newX
+      node.y = newY
+      
+      // 实时通知父组件更新 store
+      emit('node-drag', draggingNodeId.value, newX, newY)
+      
+      draw()  // 使用节流的 draw
     }
     
     e.preventDefault()
@@ -569,7 +607,7 @@ const handlePointerMove = (e: MouseEvent | TouchEvent) => {
     lastTouchDistance.value = currentDistance
     lastTouchCenter.value = currentCenter
     e.preventDefault()
-    draw()
+    draw()  // 使用节流的 draw
     return
   }
   
@@ -577,7 +615,7 @@ const handlePointerMove = (e: MouseEvent | TouchEvent) => {
   if (isPanning.value) {
     viewState.value.offsetX = lastPanOffset.value.x + (clientX - panStart.value.x)
     viewState.value.offsetY = lastPanOffset.value.y + (clientY - panStart.value.y)
-    draw()
+    draw()  // 使用节流的 draw
     e.preventDefault()
   }
 }
@@ -671,6 +709,16 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
+  // 清理 requestAnimationFrame
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId)
+    rafId = null
+  }
+  // 清理滚轮节流
+  if (wheelTimeout !== null) {
+    clearTimeout(wheelTimeout)
+    wheelTimeout = null
+  }
 })
 
 // 暴露方法给父组件

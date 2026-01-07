@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AgentChat: typeof import('./src/components/AgentChat.vue')['default']
+    Map3DInterface: typeof import('./src/components/Map3DInterface.vue')['default']
     MapCanvas: typeof import('./src/components/MapCanvas.vue')['default']
     NavigationMap: typeof import('./src/components/NavigationMap.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

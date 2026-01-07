@@ -84,6 +84,11 @@ const handleFileChange = async (event: Event) => {
   target.value = ''
 }
 
+// 节点拖拽过程中（实时更新）
+const handleNodeDrag = (nodeId: string, x: number, y: number) => {
+  store.updateNodePositionLocal(nodeId, x, y)
+}
+
 // 节点拖拽结束
 const handleNodeDragEnd = (nodeId: string, x: number, y: number) => {
   store.updateNodePositionLocal(nodeId, x, y)
@@ -247,6 +252,7 @@ const formatCoord = (value?: number) => {
             :nodes="currentFloorNodes"
             :editable="true"
             :selected-node-id="selectedNodeId"
+            @node-drag="handleNodeDrag"
             @node-drag-end="handleNodeDragEnd"
             @node-click="handleNodeSelect"
           />

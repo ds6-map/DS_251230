@@ -490,9 +490,9 @@ onUnmounted(() => {
 
 .card {
   flex: 1;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.2);
   border-radius: 20px;
-  background: rgba(28, 28, 30, 0.7);
+  background: rgba(30, 35, 50, 0.7);
   backdrop-filter: blur(40px) saturate(150%);
   overflow: hidden;
   display: flex;
@@ -517,21 +517,21 @@ onUnmounted(() => {
 .bubble {
   max-width: min(760px, 92%);
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.15);
   padding: 14px 16px;
   line-height: 1.6;
-  background: rgba(38, 38, 40, 0.8);
+  background: rgba(30, 35, 50, 0.8);
 }
 .bubble.user {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 229, 255, 0.1);
+  border-color: rgba(0, 229, 255, 0.2);
 }
 .bubble.bot {
-  background: rgba(38, 38, 40, 0.9);
+  background: rgba(30, 35, 50, 0.9);
 }
 .bubbleTitle {
   font-size: 12px;
-  color: #636366;
+  color: #8b95a8;
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -539,21 +539,21 @@ onUnmounted(() => {
 }
 .bubbleText {
   white-space: pre-wrap;
-  color: #f5f5f7;
+  color: #ffffff;
 }
 .meta {
   margin-top: 8px;
   font-size: 12px;
-  color: #636366;
+  color: #8b95a8;
 }
 
 .composer {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(0, 229, 255, 0.15);
   padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(28, 28, 30, 0.9);
+  background: rgba(30, 35, 50, 0.9);
   backdrop-filter: blur(20px);
 }
 
@@ -569,27 +569,27 @@ onUnmounted(() => {
   min-width: 220px;
   padding: 14px 16px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  background: rgba(30, 35, 50, 0.5);
   outline: none;
   font-size: 16px;
-  color: #f5f5f7;
+  color: #ffffff;
   transition: all 0.25s;
 }
 .input:focus {
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03);
+  border-color: rgba(0, 229, 255, 0.4);
+  box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.1);
 }
 .input::placeholder {
-  color: #636366;
+  color: #8b95a8;
 }
 
 .btn {
   padding: 12px 16px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-  color: #f5f5f7;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  background: rgba(30, 35, 50, 0.5);
+  color: #ffffff;
   cursor: pointer;
   transition: all 0.25s;
   white-space: nowrap;
@@ -597,8 +597,8 @@ onUnmounted(() => {
   font-weight: 500;
 }
 .btn:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.4);
+  background: rgba(30, 35, 50, 0.8);
 }
 .btn:active {
   transform: scale(0.97);
@@ -610,22 +610,24 @@ onUnmounted(() => {
 .btn.primary {
   color: #000;
   border: none;
-  background: #f5f5f7;
+  background: #00e5ff;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
 }
 .btn.primary:hover {
-  background: #e5e5e7;
+  background: #00d4ff;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.5);
 }
 .btn.ghost {
   background: transparent;
-  border-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 229, 255, 0.15);
 }
 .btn.danger {
   color: #fff;
   border: none;
-  background: #48484a;
+  background: #ff4757;
 }
 .btn.danger:hover {
-  background: #636366;
+  background: #ff6b7a;
 }
 
 .toolsRow {
@@ -637,7 +639,7 @@ onUnmounted(() => {
 }
 .hint {
   font-size: 12px;
-  color: #636366;
+  color: #8b95a8;
 }
 .progress {
   display: flex;
@@ -646,14 +648,14 @@ onUnmounted(() => {
 }
 .progressText {
   font-size: 12px;
-  color: #636366;
+  color: #8b95a8;
 }
 .spinner {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #a1a1a6;
+  border: 2px solid rgba(0, 229, 255, 0.2);
+  border-top-color: #00e5ff;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin {
@@ -665,14 +667,14 @@ onUnmounted(() => {
 .navCard {
   margin-top: 12px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(28, 28, 30, 0.9);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  background: rgba(30, 35, 50, 0.9);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   transition: all 0.25s;
 }
 .navCard:hover {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(0, 229, 255, 0.3);
 }
 .navHeader {
   padding: 14px 16px 12px;
@@ -683,13 +685,13 @@ onUnmounted(() => {
 }
 .navTitle {
   font-weight: 700;
-  color: #f5f5f7;
+  color: #ffffff;
   letter-spacing: -0.02em;
 }
 .navSub {
   margin-top: 4px;
   font-size: 13px;
-  color: #636366;
+  color: #8b95a8;
 }
 .navChips {
   padding: 0 16px 14px;
@@ -703,28 +705,28 @@ onUnmounted(() => {
   gap: 8px;
   padding: 8px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  background: rgba(0, 229, 255, 0.05);
   font-size: 13px;
-  color: #f5f5f7;
+  color: #ffffff;
 }
 .chip strong {
   font-weight: 600;
 }
 .chipLabel {
-  color: #636366;
+  color: #8b95a8;
 }
 .chipIcon {
   width: 8px;
   height: 8px;
   border-radius: 2px;
-  background: #636366;
+  background: #8b95a8;
 }
 .chipIcon.alt {
-  background: #8e8e93;
+  background: #00e5ff;
 }
 .chipIcon.ok {
-  background: #48484a;
+  background: #00ffc8;
 }
 .collapse {
   overflow: hidden;
@@ -743,9 +745,9 @@ onUnmounted(() => {
   width: calc(min(760px, 92%) - 32px);
   height: 280px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.15);
   overflow: hidden;
-  background: rgba(28, 28, 30, 0.8);
+  background: rgba(30, 35, 50, 0.8);
 }
 
 .matches {
@@ -754,15 +756,15 @@ onUnmounted(() => {
 }
 .matches li {
   margin: 8px 0;
-  color: #f5f5f7;
+  color: #ffffff;
 }
 .locationQuery {
   margin: 12px 0 0;
   width: min(420px, 100%);
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.15);
   overflow: hidden;
-  background: rgba(28, 28, 30, 0.8);
+  background: rgba(30, 35, 50, 0.8);
 }
 .locationQuery img {
   width: 100%;
@@ -778,9 +780,9 @@ onUnmounted(() => {
   width: 72px;
   height: 72px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.15);
   object-fit: cover;
-  background: rgba(28, 28, 30, 0.8);
+  background: rgba(30, 35, 50, 0.8);
   flex: 0 0 auto;
 }
 .matchMeta {
@@ -788,7 +790,7 @@ onUnmounted(() => {
 }
 .matchPath {
   font-size: 12px;
-  color: #636366;
+  color: #8b95a8;
   word-break: break-all;
 }
 
@@ -803,7 +805,7 @@ onUnmounted(() => {
 .modalMask {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(10, 14, 31, 0.9);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -814,8 +816,8 @@ onUnmounted(() => {
 .modalCard {
   width: min(860px, 100%);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(28, 28, 30, 0.98);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  background: rgba(30, 35, 50, 0.98);
   backdrop-filter: blur(40px);
   overflow: hidden;
 }
@@ -825,12 +827,12 @@ onUnmounted(() => {
   justify-content: space-between;
   gap: 14px;
   padding: 16px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.15);
 }
 .modalTitle {
   font-weight: 700;
   font-size: 17px;
-  color: #f5f5f7;
+  color: #ffffff;
 }
 .modalBody {
   padding: 18px;
@@ -841,9 +843,9 @@ onUnmounted(() => {
   width: 100%;
   aspect-ratio: 16/9;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.15);
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(10, 14, 31, 0.8);
 }
 video {
   width: 100%;
