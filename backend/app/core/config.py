@@ -148,15 +148,22 @@ def get_gmaps_client():
         import googlemaps
         api_key = settings.GMAPS_API_KEY or ""
         if not api_key:
-            # 尝试从 key.py 读取
-            api_key, _, _ = _get_api_keys()
+            # 尝试从 key.py 读取 (返回顺序: openai_key, gmaps_key, openai_base)
+            _, api_key, _ = _get_api_keys()
         if not api_key:
+            if settings.DEBUG:
+                print("[config] Google Maps API key 未配置")
             return None
-        return googlemaps.Client(key=api_key)
+        client = googlemaps.Client(key=api_key)
+        if settings.DEBUG:
+            print(f"[config] Google Maps 客户端已创建")
+        return client
     except ImportError:
+        if settings.DEBUG:
+            print("[config] googlemaps 包未安装，请运行: pip install googlemaps")
         return None
     except Exception as e:
         if settings.DEBUG:
-            print(f"Failed to create GMaps client: {e}")
+            print(f"[config] 创建 GMaps 客户端失败: {e}")
         return None
 

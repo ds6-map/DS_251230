@@ -101,12 +101,79 @@ const is3dDragging = ref(false)
 const drag3dStart = ref({ x: 0, y: 0 })
 const last3dRotation = ref({ x: 55, z: -25 })
 
+// 路线数据接口
+interface RouteData {
+  summary?: string
+  distance_text?: string
+  distance_value?: number
+  duration_text?: string
+  duration_value?: number
+  start_address?: string
+  end_address?: string
+  start_location?: { lat: number; lng: number }
+  end_location?: { lat: number; lng: number }
+  overview_polyline?: string
+}
+
 // 聊天消息列表
 interface ChatMessage {
   id: string
   role: 'user' | 'assistant'
   content: string
   timestamp: Date
+  debug?: string[]  // 调试信息
+  routeData?: RouteData  // 导航路线数据
+}
+
+// 展开的调试信息ID集合
+const expandedDebugIds = ref<Set<string>>(new Set())
+
+// 切换调试信息展开/收起
+const toggleDebug = (msgId: string) => {
+  if (expandedDebugIds.value.has(msgId)) {
+    expandedDebugIds.value.delete(msgId)
+  } else {
+    expandedDebugIds.value.add(msgId)
+  }
+}
+
+// 生成 Google Maps 嵌入 URL（显示路线）
+const getGoogleMapsEmbedUrl = (routeData: RouteData): string => {
+  if (!routeData.start_address && !routeData.end_address) {
+    return ''
+  }
+  
+  const { start_address, end_address } = routeData
+  
+  const origin = start_address || ''
+  const destination = end_address || ''
+  
+  // 编码起终点
+  const encodedOrigin = encodeURIComponent(origin)
+  const encodedDest = encodeURIComponent(destination)
+  
+  // 使用 Google Maps 的路线查询嵌入
+  // 这种格式可以在 iframe 中显示带路线的地图
+  return `https://www.google.com/maps?saddr=${encodedOrigin}&daddr=${encodedDest}&output=embed`
+}
+
+// 生成 Google Maps 路线导航 URL（在新窗口打开）
+const getGoogleMapsDirectionsUrl = (routeData: RouteData): string => {
+  if (!routeData.start_address && !routeData.start_location) {
+    return 'https://maps.google.com'
+  }
+  
+  const { start_location, end_location, start_address, end_address } = routeData
+  
+  const origin = start_address || (start_location ? `${start_location.lat},${start_location.lng}` : '')
+  const destination = end_address || (end_location ? `${end_location.lat},${end_location.lng}` : '')
+  
+  // 使用 Google Maps Directions URL
+  // 格式: https://www.google.com/maps/dir/起点/终点
+  const encodedOrigin = encodeURIComponent(origin)
+  const encodedDest = encodeURIComponent(destination)
+  
+  return `https://www.google.com/maps/dir/${encodedOrigin}/${encodedDest}`
 }
 const chatMessages = ref<ChatMessage[]>([])
 const isLoadingChat = ref(false)
@@ -559,27 +626,61 @@ const sendMessage = async () => {
   // 发送到后端
   isLoadingChat.value = true
   try {
+    console.log('📤 发送消息:', userMessage)
     const response = await api.post('/chat', {
       message: userMessage,
       session_id: 'map3d-session'
     })
     
+    console.log('📥 收到响应:', response)
+    
+    // 输出调试信息到控制台
+    if (response.debug && response.debug.length > 0) {
+      console.group('🔍 调试信息')
+      response.debug.forEach((info: string, index: number) => {
+        console.log(`${index + 1}. ${info}`)
+      })
+      console.groupEnd()
+    }
+    
+    // 处理响应
+    let replyContent = response.reply || '收到'
+    let routeData: RouteData | undefined = undefined
+    
+    // 如果返回了导航数据，格式化显示
+    if (response.tool === 'navigate' && response.data) {
+      const data = response.data
+      console.log('🗺️ 导航数据:', data)
+      routeData = data as RouteData
+      replyContent = response.reply || ''
+      if (data.distance_text && data.duration_text) {
+        // 如果 LLM 没有返回详细回复，构建一个简短的
+        if (!replyContent || replyContent.length < 20) {
+          replyContent = `🗺️ 路线已规划！`
+        }
+      }
+    }
+    
     // 添加助手回复
     chatMessages.value.push({
       id: (Date.now() + 1).toString(),
       role: 'assistant',
-      content: response.reply || '收到',
-      timestamp: new Date()
+      content: replyContent,
+      timestamp: new Date(),
+      debug: response.debug || [],
+      routeData: routeData
     })
     
     scrollChatToBottom()
   } catch (e: any) {
-    // 简单回复
+    console.error('❌ Chat error:', e)
+    // 错误回复
     chatMessages.value.push({
       id: (Date.now() + 1).toString(),
       role: 'assistant',
-      content: '抱歉，暂时无法连接到助手服务。',
-      timestamp: new Date()
+      content: `抱歉，暂时无法连接到助手服务。\n\n错误信息: ${e.message || '未知错误'}\n\n请检查网络连接后重试。`,
+      timestamp: new Date(),
+      debug: [`❌ 请求失败: ${e.message || '未知错误'}`]
     })
     scrollChatToBottom()
   } finally {
@@ -1038,9 +1139,102 @@ onUnmounted(() => {
               <div 
                 v-for="msg in chatMessages" 
                 :key="msg.id"
-                :class="['chat-bubble', msg.role]"
+                :class="['chat-bubble', msg.role, { 'with-map': msg.routeData }]"
               >
                 <div class="bubble-content">{{ msg.content }}</div>
+                
+                <!-- 导航地图卡片 -->
+                <div v-if="msg.routeData" class="route-map-card">
+                  <!-- 路线信息摘要 -->
+                  <div class="route-summary">
+                    <div class="route-endpoints">
+                      <div class="endpoint start">
+                        <span class="marker">📍</span>
+                        <span class="address">{{ msg.routeData.start_address || '起点' }}</span>
+                      </div>
+                      <div class="route-arrow">↓</div>
+                      <div class="endpoint end">
+                        <span class="marker">🏁</span>
+                        <span class="address">{{ msg.routeData.end_address || '终点' }}</span>
+                      </div>
+                    </div>
+                    <div class="route-stats">
+                      <div class="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
+                          <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <span>{{ msg.routeData.distance_text || '--' }}</span>
+                      </div>
+                      <div class="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                        <span>{{ msg.routeData.duration_text || '--' }}</span>
+                      </div>
+                      <div v-if="msg.routeData.summary" class="stat route-name">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        </svg>
+                        <span>{{ msg.routeData.summary }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Google 地图嵌入 -->
+                  <div class="route-map-container">
+                    <iframe
+                      class="route-map-iframe"
+                      :src="getGoogleMapsEmbedUrl(msg.routeData)"
+                      allowfullscreen
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                  </div>
+                  
+                  <!-- 操作按钮 -->
+                  <div class="route-actions">
+                    <a 
+                      :href="getGoogleMapsDirectionsUrl(msg.routeData)" 
+                      target="_blank" 
+                      class="route-action-btn"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15,3 21,3 21,9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
+                      </svg>
+                      <span>在 Google Maps 中打开</span>
+                    </a>
+                  </div>
+                </div>
+                
+                <!-- 调试信息（仅助手消息显示） -->
+                <div v-if="msg.role === 'assistant' && msg.debug && msg.debug.length > 0" class="debug-info">
+                  <button 
+                    class="debug-toggle"
+                    @click="toggleDebug(msg.id)"
+                    :title="expandedDebugIds.has(msg.id) ? '收起调试信息' : '展开调试信息'"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path v-if="!expandedDebugIds.has(msg.id)" d="M9 18l6-6-6-6"/>
+                      <path v-else d="M18 15l-6-6-6 6"/>
+                    </svg>
+                    <span>调试信息 ({{ msg.debug.length }})</span>
+                  </button>
+                  <transition name="debug-expand">
+                    <div v-if="expandedDebugIds.has(msg.id)" class="debug-content">
+                      <div 
+                        v-for="(info, index) in msg.debug" 
+                        :key="index"
+                        class="debug-item"
+                      >
+                        {{ info }}
+                      </div>
+                    </div>
+                  </transition>
+                </div>
               </div>
               <div 
                 v-if="isLoadingChat" 
@@ -2126,10 +2320,14 @@ onUnmounted(() => {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   min-height: 0;
+  max-height: 100%;
+  /* 确保可以滚动 */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .chat-messages-list {
@@ -2137,7 +2335,8 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 12px;
   justify-content: flex-end;
-  min-height: 100%;
+  /* 移除 min-height: 100%，让内容自然增长 */
+  padding-bottom: 8px;
 }
 
 .chat-empty {
@@ -2223,8 +2422,214 @@ onUnmounted(() => {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* 带地图的消息气泡 */
+.chat-bubble.with-map {
+  max-width: 95%;
+  padding: 12px;
+}
+
+/* 导航地图卡片 */
+.route-map-card {
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.route-summary {
+  padding: 12px;
+}
+
+.route-endpoints {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.endpoint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.endpoint .marker {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.endpoint .address {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.endpoint.start .address {
+  color: #4ade80;
+}
+
+.endpoint.end .address {
+  color: #f87171;
+}
+
+.route-arrow {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 11px;
+  line-height: 1;
+}
+
+.route-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.route-stats .stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.route-stats .stat svg {
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.route-stats .route-name {
+  flex-basis: 100%;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 地图容器 */
+.route-map-container {
+  width: 100%;
+  height: 180px;
+  background: rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.route-map-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  filter: saturate(0.9) brightness(0.95);
+}
+
+/* 操作按钮 */
+.route-actions {
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.route-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(59, 130, 246, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 6px;
+  color: #93c5fd;
+  font-size: 12px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.route-action-btn:hover {
+  background: rgba(59, 130, 246, 0.4);
+  color: #bfdbfe;
+}
+
+.route-action-btn svg {
+  flex-shrink: 0;
+}
+
 .chat-bubble.loading {
   padding: 16px 20px;
+}
+
+/* 调试信息样式 */
+.debug-info {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.debug-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+}
+
+.debug-toggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.debug-toggle svg {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.debug-content {
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.6;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.debug-item {
+  padding: 4px 0;
+  color: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.debug-item:last-child {
+  border-bottom: none;
+}
+
+/* 调试信息展开动画 */
+.debug-expand-enter-active,
+.debug-expand-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.debug-expand-enter-from {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.debug-expand-leave-to {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .typing-indicator {
@@ -2628,7 +3033,7 @@ onUnmounted(() => {
 .sidebar-content::-webkit-scrollbar,
 .suggestions-dropdown::-webkit-scrollbar,
 .chat-messages::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 .nav-steps-list::-webkit-scrollbar-track,
@@ -2636,7 +3041,8 @@ onUnmounted(() => {
 .sidebar-content::-webkit-scrollbar-track,
 .suggestions-dropdown::-webkit-scrollbar-track,
 .chat-messages::-webkit-scrollbar-track {
-  background: #2a2d35;
+  background: rgba(42, 45, 53, 0.3);
+  border-radius: 3px;
 }
 
 .nav-steps-list::-webkit-scrollbar-thumb,
@@ -2644,8 +3050,17 @@ onUnmounted(() => {
 .sidebar-content::-webkit-scrollbar-thumb,
 .suggestions-dropdown::-webkit-scrollbar-thumb,
 .chat-messages::-webkit-scrollbar-thumb {
-  background: #4a4d55;
-  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+
+.nav-steps-list::-webkit-scrollbar-thumb:hover,
+.navigation-results::-webkit-scrollbar-thumb:hover,
+.sidebar-content::-webkit-scrollbar-thumb:hover,
+.suggestions-dropdown::-webkit-scrollbar-thumb:hover,
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 /* ============================================

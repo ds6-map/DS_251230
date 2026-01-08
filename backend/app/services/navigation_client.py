@@ -49,42 +49,67 @@ def detect_mode(s: str) -> str:
     return "driving"
 
 
+def _clean_destination(dest: str) -> str:
+    """清理目的地字符串，移除多余的后缀词"""
+    # 移除常见的后缀问句词
+    suffixes = [
+        r"\s*怎么走\??$", r"\s*怎么去\??$", r"\s*怎么到\??$",
+        r"\s*多远\??$", r"\s*多长时间\??$", r"\s*要多久\??$",
+        r"\s*怎么样\??$", r"\s*如何\??$", r"\s*吗\??$", r"\s*呢\??$",
+        r"\s*\?$", r"\s*？$",
+    ]
+    d = dest.strip()
+    for suffix in suffixes:
+        d = re.sub(suffix, "", d, flags=re.IGNORECASE)
+    return d.strip()
+
+
 def parse_navigation_query(s: str) -> Dict[str, Any]:
-    # 解析自然语言为：origin / destination / mode
-    # 支持：
-    # - "从 A 到 B"
-    # - "导航到 B"
-    # - 英文 from/to 或 navigate to
+    """
+    解析自然语言为：origin / destination / mode
+    支持：
+    - "从 A 到 B"
+    - "从 A 到 B 怎么走"
+    - "导航到 B"
+    - 英文 from/to 或 navigate to
+    """
     m = normalize_text(s)
     mode = detect_mode(m)
+    
+    # 匹配 "从 A 到 B" 格式
     pat_pairs = [
-        r"(?:从|由)\s*(.+?)\s*(?:到|至|->|→)\s*(.+)",
+        r"(?:从|由)\s*(.+?)\s*(?:到|至|去|->|→)\s*(.+)",
         r"(?:from)\s*(.+?)\s*(?:to)\s*(.+)",
     ]
     for pat in pat_pairs:
         r = re.search(pat, m, re.IGNORECASE)
         if r:
             o = r.group(1).strip()
-            d = r.group(2).strip()
-            return {"origin": o, "destination": d, "mode": mode}
+            d = _clean_destination(r.group(2))
+            if o and d:
+                return {"origin": o, "destination": d, "mode": mode}
 
+    # 匹配 "导航到 B" 格式
     pat_single = [
         r"(?:导航到|导航至|前往|去往|去|到)\s*(.+)",
-        r"(?:navigate to)\s*(.+)",
+        r"(?:navigate to|go to|directions to)\s*(.+)",
     ]
     for pat in pat_single:
         r = re.search(pat, m, re.IGNORECASE)
         if r:
-            d = r.group(1).strip()
-            return {"origin": None, "destination": d, "mode": mode}
+            d = _clean_destination(r.group(1))
+            if d:
+                return {"origin": None, "destination": d, "mode": mode}
 
-    kw = ["导航", "路线", "去", "到"]
+    # 兜底：尝试提取目的地
+    kw = ["导航", "路线", "去", "到", "怎么走", "怎么去"]
     if any(k in m for k in kw):
         parts = re.split(r"(?:导航到|导航至|前往|去往|去|到)", m)
         if len(parts) > 1:
-            d = parts[-1].strip()
+            d = _clean_destination(parts[-1])
             if d:
                 return {"origin": None, "destination": d, "mode": mode}
+    
     return {"origin": None, "destination": None, "mode": mode}
 
 
