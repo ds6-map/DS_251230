@@ -50,9 +50,10 @@ async def lifespan(app: FastAPI):
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     print(f"✅ 上传目录已就绪: {settings.UPLOAD_DIR}")
     
-    # 加载 AI 模型（Mock 模式）
+    # 加载 AI 模型
     await ai_service.load_model()
-    print("✅ AI 服务已就绪（Mock 模式）")
+    mode_text = "Mock 模式" if ai_service._mock_mode else "ViT 图像识别模式"
+    print(f"✅ AI 服务已就绪（{mode_text}）")
     
     print("🎉 应用启动完成!")
     

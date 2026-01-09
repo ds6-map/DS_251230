@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list = ["http://localhost:5173", "http://127.0.0.1:5173"]
     
     # AI 服务配置 (Mock 模式)
-    AI_MOCK_MODE: bool = True
+    AI_MOCK_MODE: bool = False  # 设置为 False 启用 ViT 图像识别
     CLIP_MODEL_NAME: str = "openai/clip-vit-base-patch32"
     
     # Agent Chat 配置 (来自 add 项目)
