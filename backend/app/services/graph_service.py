@@ -270,21 +270,23 @@ class GraphService:
             
             if edge_type == "stairs":
                 if floor_change and floor_change > 0:
-                    instruction = f"在楼梯处上 {floor_change} 层，到达 {to_floor} 楼"
+                    floors_text = "floor" if floor_change == 1 else "floors"
+                    instruction = f"Go up {floor_change} {floors_text} via stairs to Level {to_floor}"
                 elif floor_change and floor_change < 0:
-                    instruction = f"在楼梯处下 {abs(floor_change)} 层，到达 {to_floor} 楼"
+                    floors_text = "floor" if abs(floor_change) == 1 else "floors"
+                    instruction = f"Go down {abs(floor_change)} {floors_text} via stairs to Level {to_floor}"
                 else:
-                    instruction = f"经过楼梯，到达 {to_name}"
+                    instruction = f"Pass through stairs to {to_name}"
             elif edge_type == "lifts":
                 if floor_change:
-                    instruction = f"乘坐电梯到 {to_floor} 楼"
+                    instruction = f"Take lift to Level {to_floor}"
                 else:
-                    instruction = f"经过电梯，到达 {to_name}"
+                    instruction = f"Pass through lift to {to_name}"
             else:
                 if to_detail:
-                    instruction = f"直行约 {weight:.0f} 米，到达 {to_name} ({to_detail})"
+                    instruction = f"Walk about {weight:.0f}M to {to_name} ({to_detail})"
                 else:
-                    instruction = f"直行约 {weight:.0f} 米，到达 {to_name}"
+                    instruction = f"Walk about {weight:.0f}M to {to_name}"
             
             steps.append(NavigationStep(
                 step_number=i + 1,

@@ -194,7 +194,7 @@ const searchStart = async () => {
       await store.search(startInput.value)
       startSearchResults.value = store.searchResults
     } catch (e) {
-      console.error('搜索起点失败:', e)
+      console.error('Search start failed:', e)
     } finally {
       isSearchingStart.value = false
     }
@@ -216,7 +216,7 @@ const searchEnd = async () => {
       await store.search(endInput.value)
       endSearchResults.value = store.searchResults
     } catch (e) {
-      console.error('搜索终点失败:', e)
+      console.error('Search end failed:', e)
     } finally {
       isSearchingEnd.value = false
     }
@@ -258,11 +258,11 @@ const resetInputs = () => {
 // 开始导航
 const startNavigation = async () => {
   if (!startNode.value || !endNode.value) {
-    showToast('请先选择起点和终点')
+    showToast('Please select start and destination first')
     return
   }
   
-  showLoadingToast({ message: '规划路线中...', forbidClick: true })
+  showLoadingToast({ message: 'Planning route...', forbidClick: true })
   
   try {
     const response = await calculateRoute(startNode.value.id, undefined, endNode.value.id)
@@ -290,11 +290,11 @@ const startNavigation = async () => {
       const floor = floors.find(f => f.id === startNode.value?.floor)
       if (floor) selectedFloor.value = floor
     } else {
-      showToast(response.message || '路径规划失败')
+      showToast(response.message || 'Route planning failed')
     }
   } catch (e: any) {
     closeToast()
-    showToast(e.message || '路径规划失败')
+    showToast(e.message || 'Route planning failed')
   }
 }
 
@@ -308,12 +308,12 @@ const getStepIcon = (edgeType: string): string => {
   }
 }
 
-// 格式化距离
+// Format distance
 const formatDistance = (distance: number): string => {
   if (distance < 1000) {
-    return `${Math.round(distance)} 米`
+    return `${Math.round(distance)} M`
   }
-  return `${(distance / 1000).toFixed(1)} 公里`
+  return `${(distance / 1000).toFixed(1)} KM`
 }
 
 // 计算每层的Z轴偏移
@@ -377,7 +377,7 @@ const handleFileChange = async (event: Event) => {
   selectedCandidate.value = null
   
   try {
-    console.log('📤 [识别请求] 开始上传图片识别', {
+    console.log('📤 [Recognition] Starting image recognition', {
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type
@@ -385,24 +385,24 @@ const handleFileChange = async (event: Event) => {
     
     const response = await recognizeLocation(file)
     
-    console.log('✅ [识别响应] 收到识别结果', {
+    console.log('✅ [Recognition] Received results', {
       success: response.success,
       method: response.method,
       candidates_count: response.candidates.length,
       message: response.message,
       candidates: response.candidates.map((c, i) => 
-        `[${i+1}] ${c.node_name} (楼层: ${c.floor}, 置信度: ${c.confidence})`
+        `[${i+1}] ${c.node_name} (Floor: ${c.floor}, Confidence: ${c.confidence})`
       )
     })
     
     if (response.success && response.candidates.length > 0) {
       recognitionCandidates.value = response.candidates.slice(0, 3)
     } else {
-      showToast(response.message || '未能识别位置，请重试')
+      showToast(response.message || 'Failed to recognize location, please retry')
     }
   } catch (e: any) {
-    console.error('❌ [识别错误]', e)
-    showToast(e.message || '识别失败')
+    console.error('❌ [Recognition Error]', e)
+    showToast(e.message || 'Recognition failed')
   } finally {
     isRecognizing.value = false
     target.value = ''
@@ -415,11 +415,11 @@ const selectRecognitionCandidate = (candidate: LocationCandidate) => {
 
 const confirmRecognizedLocation = () => {
   if (!selectedCandidate.value) {
-    showToast('请先选择一个位置')
+    showToast('Please select a location first')
     return
   }
   
-  // 设置为起点
+  // Set as start point
   startNode.value = {
     id: selectedCandidate.value.node_id,
     name: selectedCandidate.value.node_name,
@@ -430,7 +430,7 @@ const confirmRecognizedLocation = () => {
   
   closePhotoSearch()
   showToast({
-    message: '起点已设置',
+    message: 'Start point set',
     icon: 'success',
   })
 }
@@ -468,7 +468,7 @@ const handleMapWheel = (e: WheelEvent) => {
   const mouseY = e.clientY - rect.top
   
   const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1
-  const newZoom = Math.max(0.2, Math.min(8, mapZoom.value * zoomFactor))
+  const newZoom = Math.max(0.05, Math.min(8, mapZoom.value * zoomFactor))  // 最小 5%
   
   // 以鼠标位置为中心缩放
   const zoomChange = newZoom / mapZoom.value
@@ -503,7 +503,7 @@ const zoomIn = () => {
 }
 
 const zoomOut = () => {
-  mapZoom.value = Math.max(0.1, mapZoom.value / 1.3)
+  mapZoom.value = Math.max(0.05, mapZoom.value / 1.3)  // 最小 5%
 }
 
 const resetMapView = () => {
@@ -626,25 +626,25 @@ const sendMessage = async () => {
   // 发送到后端
   isLoadingChat.value = true
   try {
-    console.log('📤 发送消息:', userMessage)
+    console.log('📤 Sending message:', userMessage)
     const response = await api.post('/chat', {
       message: userMessage,
       session_id: 'map3d-session'
     })
     
-    console.log('📥 收到响应:', response)
+    console.log('📥 Received response:', response)
     
-    // 输出调试信息到控制台
+    // Output debug info to console
     if (response.debug && response.debug.length > 0) {
-      console.group('🔍 调试信息')
+      console.group('🔍 Debug Info')
       response.debug.forEach((info: string, index: number) => {
         console.log(`${index + 1}. ${info}`)
       })
       console.groupEnd()
     }
     
-    // 处理响应
-    let replyContent = response.reply || '收到'
+    // Process response
+    let replyContent = response.reply || 'Received'
     let routeData: RouteData | undefined = undefined
     
     // 如果返回了导航数据，格式化显示
@@ -654,9 +654,9 @@ const sendMessage = async () => {
       routeData = data as RouteData
       replyContent = response.reply || ''
       if (data.distance_text && data.duration_text) {
-        // 如果 LLM 没有返回详细回复，构建一个简短的
+        // If LLM didn't return a detailed reply, build a short one
         if (!replyContent || replyContent.length < 20) {
-          replyContent = `🗺️ 路线已规划！`
+          replyContent = `🗺️ Route planned!`
         }
       }
     }
@@ -674,13 +674,13 @@ const sendMessage = async () => {
     scrollChatToBottom()
   } catch (e: any) {
     console.error('❌ Chat error:', e)
-    // 错误回复
+    // Error reply
     chatMessages.value.push({
       id: (Date.now() + 1).toString(),
       role: 'assistant',
-      content: `抱歉，暂时无法连接到助手服务。\n\n错误信息: ${e.message || '未知错误'}\n\n请检查网络连接后重试。`,
+      content: `Sorry, unable to connect to the assistant service.\n\nError: ${e.message || 'Unknown error'}\n\nPlease check your network and try again.`,
       timestamp: new Date(),
-      debug: [`❌ 请求失败: ${e.message || '未知错误'}`]
+      debug: [`❌ Request failed: ${e.message || 'Unknown error'}`]
     })
     scrollChatToBottom()
   } finally {
@@ -750,30 +750,30 @@ onUnmounted(() => {
       </button>
 
       <div v-show="!isSidebarCollapsed" class="sidebar-content">
-        <!-- 起点输入 -->
+        <!-- Start Point Input -->
         <div class="input-group">
           <div class="input-icon start-icon"></div>
           <div class="input-wrapper">
             <input
               v-model="startInput"
               type="text"
-              placeholder="输入起点..."
+              placeholder="Enter start..."
               class="nav-input"
               @focus="startFocused = true"
               @blur="setTimeout(() => startFocused = false, 200)"
               @input="searchStart"
             />
-            <button class="camera-btn" @click="openPhotoSearch" title="拍照识别起点">
+            <button class="camera-btn" @click="openPhotoSearch" title="Photo Recognition">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                 <circle cx="12" cy="13" r="4"/>
               </svg>
             </button>
           </div>
-          <!-- 起点联想列表 -->
+          <!-- Start Suggestions -->
           <div v-if="startFocused && (startSearchResults.length > 0 || isSearchingStart)" class="suggestions-dropdown">
             <div v-if="isSearchingStart" class="suggestion-loading">
-              <span>搜索中...</span>
+              <span>Searching...</span>
             </div>
             <div 
               v-else
@@ -786,7 +786,7 @@ onUnmounted(() => {
               <span class="suggestion-floor">{{ node.floor }}F</span>
             </div>
             <div v-if="!isSearchingStart && startSearchResults.length === 0 && startInput" class="suggestion-empty">
-              未找到匹配结果
+              No results found
             </div>
           </div>
         </div>
@@ -798,7 +798,7 @@ onUnmounted(() => {
           <div class="dot"></div>
         </div>
 
-        <!-- 终点输入 -->
+        <!-- Destination Input -->
         <div class="input-group">
           <div class="input-icon end-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -810,17 +810,17 @@ onUnmounted(() => {
             <input
               v-model="endInput"
               type="text"
-              placeholder="输入终点..."
+              placeholder="Enter destination..."
               class="nav-input"
               @focus="endFocused = true"
               @blur="setTimeout(() => endFocused = false, 200)"
               @input="searchEnd"
             />
           </div>
-          <!-- 终点联想列表 -->
+          <!-- Destination Suggestions -->
           <div v-if="endFocused && (endSearchResults.length > 0 || isSearchingEnd)" class="suggestions-dropdown">
             <div v-if="isSearchingEnd" class="suggestion-loading">
-              <span>搜索中...</span>
+              <span>Searching...</span>
             </div>
             <div 
               v-else
@@ -833,12 +833,12 @@ onUnmounted(() => {
               <span class="suggestion-floor">{{ node.floor }}F</span>
             </div>
             <div v-if="!isSearchingEnd && endSearchResults.length === 0 && endInput" class="suggestion-empty">
-              未找到匹配结果
+              No results found
             </div>
           </div>
         </div>
 
-        <!-- 按钮组 -->
+        <!-- Action Buttons -->
         <div class="action-row">
           <div class="time-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -846,36 +846,36 @@ onUnmounted(() => {
               <polyline points="12 6 12 12 16 14"/>
             </svg>
           </div>
-          <button class="btn-secondary" @click="resetInputs">重新输入</button>
+          <button class="btn-secondary" @click="resetInputs">Reset</button>
           <button 
             class="btn-primary" 
             :disabled="!startNode || !endNode"
             @click="startNavigation"
           >
-            开始导航
+            Start Navigation
           </button>
         </div>
 
-        <!-- 导航结果 -->
+        <!-- Navigation Results -->
         <div v-if="isNavigating" class="navigation-results">
-          <!-- 路线概览 -->
+          <!-- Route Overview -->
           <div class="route-overview">
             <div class="route-stat">
               <span class="stat-value">{{ formatDistance(totalDistance) }}</span>
-              <span class="stat-label">总距离</span>
+              <span class="stat-label">Distance</span>
             </div>
             <div class="route-stat">
               <span class="stat-value">{{ floorsInvolved.join(', ') }}F</span>
-              <span class="stat-label">经过楼层</span>
+              <span class="stat-label">Floors</span>
             </div>
           </div>
           
-          <!-- 起点信息 -->
+          <!-- Start Location Info -->
           <div class="location-info start">
             <div class="location-dot green"></div>
             <div class="location-details">
               <div class="location-name">{{ startNode?.name }}</div>
-              <div class="location-address">{{ startNode?.detail || `${startNode?.floor}楼` }}</div>
+              <div class="location-address">{{ startNode?.detail || `Floor ${startNode?.floor}` }}</div>
             </div>
           </div>
 
@@ -890,7 +890,7 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <!-- 终点信息 -->
+          <!-- Destination Info -->
           <div class="location-info end">
             <div class="location-dot red">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -899,7 +899,7 @@ onUnmounted(() => {
             </div>
             <div class="location-details">
               <div class="location-name">{{ endNode?.name }}</div>
-              <div class="location-address">{{ endNode?.detail || `${endNode?.floor}楼` }}</div>
+              <div class="location-address">{{ endNode?.detail || `Floor ${endNode?.floor}` }}</div>
             </div>
           </div>
         </div>
@@ -917,19 +917,19 @@ onUnmounted(() => {
       @wheel="handle3dWheel"
       @mousedown="handle3dMouseDown"
     >
-      <!-- 3D控制按钮 -->
+      <!-- 3D Controls -->
       <div class="viewport-controls">
-        <button class="viewport-ctrl-btn" @click="zoom3dIn" title="放大">
+        <button class="viewport-ctrl-btn" @click="zoom3dIn" title="Zoom In">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
         </button>
-        <button class="viewport-ctrl-btn" @click="zoom3dOut" title="缩小">
+        <button class="viewport-ctrl-btn" @click="zoom3dOut" title="Zoom Out">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
         </button>
-        <button class="viewport-ctrl-btn" @click="reset3dView" title="重置视角">
+        <button class="viewport-ctrl-btn" @click="reset3dView" title="Reset View">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
             <path d="M3 3v5h5"/>
@@ -1004,26 +1004,26 @@ onUnmounted(() => {
               />
             </svg>
             <div class="floor-label-tag">{{ floor.name }}</div>
-            <!-- 楼层路线指示 -->
+            <!-- Floor Route Indicator -->
             <div v-if="isNavigating && floorsInvolved.includes(floor.id)" class="floor-route-indicator">
-              <span v-if="startNode?.floor === floor.id">起</span>
-              <span v-else-if="endNode?.floor === floor.id">终</span>
-              <span v-else>经</span>
+              <span v-if="startNode?.floor === floor.id">S</span>
+              <span v-else-if="endNode?.floor === floor.id">E</span>
+              <span v-else>T</span>
             </div>
           </div>
         </div>
       </div>
       
-      <div class="viewport-hint">拖拽旋转 · 滚轮缩放 · 点击楼层查看详情</div>
+      <div class="viewport-hint">Drag to rotate · Scroll to zoom · Click floor for details</div>
     </div>
 
     <!-- 右侧楼层详情栏 -->
     <transition name="slide-right">
       <div v-if="isMapExpanded && expandedFloor" class="detail-sidebar">
-        <!-- 头部 -->
+        <!-- Header -->
         <div class="detail-header">
-          <h3>{{ expandedFloor.name }} - {{ isNavigating ? '导航路线' : '详细地图' }}</h3>
-          <button class="close-btn" @click="closeExpandedMap" title="关闭">
+          <h3>{{ expandedFloor.name }} - {{ isNavigating ? 'Navigation Route' : 'Detailed Map' }}</h3>
+          <button class="close-btn" @click="closeExpandedMap" title="Close">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 6L6 18M6 6l12 12"/>
             </svg>
@@ -1040,9 +1040,9 @@ onUnmounted(() => {
               :end-node-id="endNode?.id"
             />
           </div>
-          <!-- 楼层切换器 -->
+          <!-- Floor Switcher -->
           <div class="floor-switcher" v-if="floorsInvolved.length > 1">
-            <span class="switcher-label">切换楼层：</span>
+            <span class="switcher-label">Switch Floor:</span>
             <div class="floor-tabs">
               <button 
                 v-for="floorId in floorsInvolved" 
@@ -1051,18 +1051,18 @@ onUnmounted(() => {
                 @click="switchDetailFloor(floorId)"
               >
                 L{{ floorId }}
-                <span v-if="startNode?.floor === floorId" class="tab-badge start">起</span>
-                <span v-else-if="endNode?.floor === floorId" class="tab-badge end">终</span>
+                <span v-if="startNode?.floor === floorId" class="tab-badge start">S</span>
+                <span v-else-if="endNode?.floor === floorId" class="tab-badge end">E</span>
               </button>
             </div>
           </div>
         </template>
         
-        <!-- 非导航状态：使用原来的图片视图 -->
+        <!-- Non-navigation state: use original image view -->
         <template v-else>
-          <!-- 控制栏 -->
+          <!-- Control bar -->
           <div class="detail-controls">
-            <button class="ctrl-btn" @click="zoomIn" title="放大">
+            <button class="ctrl-btn" @click="zoomIn" title="Zoom In">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"/>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -1070,14 +1070,14 @@ onUnmounted(() => {
                 <line x1="8" y1="11" x2="14" y2="11"/>
               </svg>
             </button>
-            <button class="ctrl-btn" @click="zoomOut" title="缩小">
+            <button class="ctrl-btn" @click="zoomOut" title="Zoom Out">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"/>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 <line x1="8" y1="11" x2="14" y2="11"/>
               </svg>
             </button>
-            <button class="ctrl-btn" @click="resetMapView" title="重置">
+            <button class="ctrl-btn" @click="resetMapView" title="Reset">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
                 <path d="M3 3v5h5"/>
@@ -1105,21 +1105,21 @@ onUnmounted(() => {
             />
           </div>
           
-          <!-- 操作提示 -->
+          <!-- Hint -->
           <div class="detail-hint">
-            <span>滚轮缩放 · 拖拽平移</span>
+            <span>Scroll to zoom · Drag to pan</span>
           </div>
         </template>
       </div>
     </transition>
 
-    <!-- 底部聊天组件 -->
+    <!-- Bottom Chat Component -->
     <div class="chat-container" :class="{ 'expanded': isChatExpanded }" @click.stop>
-      <!-- 对话气泡区域 -->
+      <!-- Chat bubble area -->
       <transition name="chat-panel">
         <div v-if="isChatExpanded" class="chat-panel">
           <div class="chat-header">
-            <span class="chat-title">智能助手</span>
+            <span class="chat-title">Smart Assistant</span>
             <button class="chat-close-btn" @click="toggleChat">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12"/>
@@ -1132,7 +1132,7 @@ onUnmounted(() => {
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
-              <span>有什么可以帮您的？</span>
+              <span>How can I help you?</span>
             </div>
             <!-- 正常顺序：最新消息在底部 -->
             <transition-group name="bubble-up" tag="div" class="chat-messages-list">
@@ -1150,12 +1150,12 @@ onUnmounted(() => {
                     <div class="route-endpoints">
                       <div class="endpoint start">
                         <span class="marker">📍</span>
-                        <span class="address">{{ msg.routeData.start_address || '起点' }}</span>
+                        <span class="address">{{ msg.routeData.start_address || 'Start' }}</span>
                       </div>
                       <div class="route-arrow">↓</div>
                       <div class="endpoint end">
                         <span class="marker">🏁</span>
-                        <span class="address">{{ msg.routeData.end_address || '终点' }}</span>
+                        <span class="address">{{ msg.routeData.end_address || 'End' }}</span>
                       </div>
                     </div>
                     <div class="route-stats">
@@ -1205,23 +1205,23 @@ onUnmounted(() => {
                         <polyline points="15,3 21,3 21,9"/>
                         <line x1="10" y1="14" x2="21" y2="3"/>
                       </svg>
-                      <span>在 Google Maps 中打开</span>
+                      <span>Open in Google Maps</span>
                     </a>
                   </div>
                 </div>
                 
-                <!-- 调试信息（仅助手消息显示） -->
+                <!-- Debug info (only for assistant messages) -->
                 <div v-if="msg.role === 'assistant' && msg.debug && msg.debug.length > 0" class="debug-info">
                   <button 
                     class="debug-toggle"
                     @click="toggleDebug(msg.id)"
-                    :title="expandedDebugIds.has(msg.id) ? '收起调试信息' : '展开调试信息'"
+                    :title="expandedDebugIds.has(msg.id) ? 'Collapse debug info' : 'Expand debug info'"
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path v-if="!expandedDebugIds.has(msg.id)" d="M9 18l6-6-6-6"/>
                       <path v-else d="M18 15l-6-6-6 6"/>
                     </svg>
-                    <span>调试信息 ({{ msg.debug.length }})</span>
+                    <span>Debug Info ({{ msg.debug.length }})</span>
                   </button>
                   <transition name="debug-expand">
                     <div v-if="expandedDebugIds.has(msg.id)" class="debug-content">
@@ -1253,7 +1253,7 @@ onUnmounted(() => {
               ref="chatInputRef"
               v-model="chatMessage"
               type="text" 
-              placeholder="输入消息..." 
+              placeholder="Type a message..." 
               class="chat-input"
               @keyup.enter="sendMessage"
               :disabled="isLoadingChat"
@@ -1310,7 +1310,7 @@ onUnmounted(() => {
       </button>
     </div>
 
-    <!-- 图片识别弹窗 -->
+    <!-- Photo Recognition Modal -->
     <transition name="modal">
       <div v-if="isPhotoSearchOpen" class="photo-search-modal" @click.self="closePhotoSearch">
         <div class="photo-search-content">
@@ -1320,10 +1320,10 @@ onUnmounted(() => {
             </svg>
           </button>
           
-          <h2 class="modal-title">图片识别定位</h2>
+          <h2 class="modal-title">Photo Location Recognition</h2>
           
           <div class="photo-grid">
-            <!-- 用户上传的图片 -->
+            <!-- User uploaded photo -->
             <div class="photo-card your-photo" :class="{ 'selected': selectedCandidate === null }">
               <div class="photo-placeholder cyan-border" v-if="!uploadedImage">
                 <div v-if="isRecognizing" class="loading-spinner"></div>
@@ -1333,12 +1333,12 @@ onUnmounted(() => {
                 </svg>
               </div>
               <div v-else class="photo-preview">
-                <img :src="uploadedImage" alt="您的照片" />
+                <img :src="uploadedImage" alt="Your Photo" />
               </div>
-              <div class="photo-label">您的照片</div>
+              <div class="photo-label">Your Photo</div>
             </div>
             
-            <!-- 识别结果 -->
+            <!-- Recognition results -->
             <template v-if="recognitionCandidates.length > 0">
               <div 
                 v-for="(candidate, index) in recognitionCandidates" 
@@ -1351,7 +1351,7 @@ onUnmounted(() => {
                   <div class="result-rank">{{ index + 1 }}</div>
                   <div class="result-info">
                     <div class="result-name">{{ candidate.node_name }}</div>
-                    <div class="result-floor">{{ candidate.floor }}楼</div>
+                    <div class="result-floor">Floor {{ candidate.floor }}</div>
                   </div>
                 </div>
                 <div class="photo-label">
@@ -1366,7 +1366,7 @@ onUnmounted(() => {
               </div>
             </template>
             
-            <!-- 识别中 -->
+            <!-- Recognizing -->
             <template v-else-if="isRecognizing">
               <div class="photo-card loading-card" v-for="i in 3" :key="i">
                 <div class="photo-placeholder">
@@ -1376,10 +1376,10 @@ onUnmounted(() => {
               </div>
             </template>
             
-            <!-- 无结果 -->
+            <!-- No results -->
             <div v-else-if="!isRecognizing && uploadedImage" class="no-results">
-              <p>未能识别到匹配的位置</p>
-              <p class="hint">请尝试拍摄更清晰的照片</p>
+              <p>No matching location found</p>
+              <p class="hint">Try taking a clearer photo</p>
             </div>
           </div>
           
@@ -1389,14 +1389,14 @@ onUnmounted(() => {
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                 <circle cx="12" cy="13" r="4"/>
               </svg>
-              重新上传
+              Re-upload
             </button>
             <button 
               class="btn-primary" 
               :disabled="!selectedCandidate"
               @click="confirmRecognizedLocation"
             >
-              确认位置
+              Confirm Location
             </button>
           </div>
         </div>

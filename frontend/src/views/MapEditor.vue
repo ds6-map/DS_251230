@@ -104,8 +104,9 @@ const locateNode = (nodeId: string) => {
   selectedNodeId.value = nodeId
   const node = currentFloorNodes.value.find(n => n.id === nodeId)
   if (node && !node.has_coordinates) {
-    const centerX = (currentMap.value?.width || 300) / 2
-    const centerY = (currentMap.value?.height || 300) / 2
+    // 使用更大的默认值（1000），因为底图 width/height 可能为 0（自动检测）
+    const centerX = (currentMap.value?.width || 1000) / 2
+    const centerY = (currentMap.value?.height || 1000) / 2
     node.x = centerX
     node.y = centerY
     store.updateNodePositionLocal(nodeId, centerX, centerY)

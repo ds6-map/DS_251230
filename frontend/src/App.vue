@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-const showNav = ref(true)
 </script>
 
 <template>
@@ -11,12 +8,6 @@ const showNav = ref(true)
         <component :is="Component" />
       </transition>
     </router-view>
-    
-    <!-- 底部导航 -->
-    <van-tabbar v-if="showNav" route class="app-tabbar">
-      <van-tabbar-item to="/" icon="home-o">首页</van-tabbar-item>
-      <van-tabbar-item to="/editor" icon="edit">编辑器</van-tabbar-item>
-    </van-tabbar>
   </div>
 </template>
 
@@ -24,27 +15,6 @@ const showNav = ref(true)
 .app-container {
   min-height: 100vh;
   background-color: #000000;
-}
-
-/* 底部导航栏 - 青绿色主题 */
-.app-tabbar {
-  background: rgba(11, 40, 40, 0.95) !important;
-  backdrop-filter: blur(40px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(40px) saturate(150%) !important;
-  border-top: 1px solid rgba(0, 229, 255, 0.2) !important;
-}
-
-:deep(.van-tabbar-item) {
-  color: #8b95a8 !important;
-  background: transparent !important;
-}
-
-:deep(.van-tabbar-item--active) {
-  color: #00e5ff !important;
-}
-
-:deep(.van-tabbar-item__icon) {
-  font-size: 22px !important;
 }
 
 /* 页面切换动画 */

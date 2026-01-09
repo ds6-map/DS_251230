@@ -33,8 +33,8 @@ const containerRef = ref<HTMLDivElement | null>(null)
 // 视图状态
 const viewState = ref({
   zoom: 1,
-  minZoom: 0.5,
-  maxZoom: 8,  // 增加最大缩放范围，从 4 提升到 8（800%）
+  minZoom: 0.05,  // 最小缩放 5%
+  maxZoom: 8,     // 最大缩放 800%
   offsetX: 0,
   offsetY: 0,
 })
@@ -64,6 +64,9 @@ const PATH_LINE_WIDTH = 5
 // 图片加载
 const mapImage = ref<HTMLImageElement | null>(null)
 const imageLoaded = ref(false)
+
+// 实际图片尺寸（用于坐标限制）
+const actualImageSize = ref({ width: 0, height: 0 })
 
 // 容器尺寸
 const containerSize = ref({ width: 0, height: 0 })
@@ -106,31 +109,35 @@ const loadImage = () => {
   const img = new Image()
   img.crossOrigin = 'anonymous'
   
+  // 设置图片加载完成后的处理
+  const onImageReady = () => {
+    mapImage.value = img
+    imageLoaded.value = true
+    // 保存实际图片尺寸（用于坐标限制）
+    actualImageSize.value = {
+      width: props.mapInfo.width || img.naturalWidth,
+      height: props.mapInfo.height || img.naturalHeight,
+    }
+    // 初始化视图，让地图居中
+    resetView()
+    draw()
+  }
+  
   // 禁用图片解码时的压缩
   // 使用 decode() 方法确保图片完全加载后再显示
   img.onload = () => {
     // 确保图片完全解码
     if (img.decode) {
       img.decode().then(() => {
-        mapImage.value = img
-        imageLoaded.value = true
-        // 初始化视图，让地图居中
-        resetView()
-        draw()
+        onImageReady()
       }).catch((err) => {
         console.error('Image decode error:', err)
         // 即使解码失败也继续显示
-        mapImage.value = img
-        imageLoaded.value = true
-        resetView()
-        draw()
+        onImageReady()
       })
     } else {
       // 不支持 decode() 的浏览器直接使用
-      mapImage.value = img
-      imageLoaded.value = true
-      resetView()
-      draw()
+      onImageReady()
     }
   }
   img.onerror = () => {
@@ -151,14 +158,18 @@ const resetView = () => {
 // 获取节点的显示坐标
 const getNodeDisplayCoords = (node: NodeInfo | { id: string; x?: number; y?: number }) => {
   const hasCoords = node.x !== null && node.x !== undefined && 
-                    node.y !== null && node.y !== undefined
+                    node.y !== null && node.y !== undefined &&
+                    (node.x !== 0 || node.y !== 0)  // (0,0) 视为未配置
   
   if (hasCoords) {
     return { x: node.x!, y: node.y!, hasCoords: true }
   }
   
-  const centerX = (props.mapInfo.width || 300) / 2
-  const centerY = (props.mapInfo.height || 300) / 2
+  // 使用实际图片尺寸计算中心点
+  const imgWidth = actualImageSize.value.width || props.mapInfo.width || 1000
+  const imgHeight = actualImageSize.value.height || props.mapInfo.height || 1000
+  const centerX = imgWidth / 2
+  const centerY = imgHeight / 2
   return { x: centerX, y: centerY, hasCoords: false }
 }
 
@@ -276,10 +287,27 @@ const performDraw = () => {
     )
     
     if (nodesWithCoords.length >= 2) {
-      // 路径光晕效果 - 低饱和灰色
+      // 路径外发光效果 - 淡红色光晕
       ctx.save()
-      ctx.strokeStyle = 'rgba(161, 161, 166, 0.3)'
-      ctx.lineWidth = PATH_LINE_WIDTH * 3 / totalScale
+      ctx.strokeStyle = 'rgba(255, 100, 100, 0.25)'
+      ctx.lineWidth = PATH_LINE_WIDTH * 5 / totalScale
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.shadowColor = 'rgba(255, 80, 80, 0.6)'
+      ctx.shadowBlur = 20
+      
+      ctx.beginPath()
+      ctx.moveTo(nodesWithCoords[0].x!, nodesWithCoords[0].y!)
+      for (let i = 1; i < nodesWithCoords.length; i++) {
+        ctx.lineTo(nodesWithCoords[i].x!, nodesWithCoords[i].y!)
+      }
+      ctx.stroke()
+      ctx.restore()
+      
+      // 路径中间光晕 - 淡红色
+      ctx.save()
+      ctx.strokeStyle = 'rgba(255, 120, 120, 0.4)'
+      ctx.lineWidth = PATH_LINE_WIDTH * 2.5 / totalScale
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       
@@ -291,11 +319,13 @@ const performDraw = () => {
       ctx.stroke()
       ctx.restore()
       
-      // 主路径 - 低饱和灰色
-      ctx.strokeStyle = '#a1a1a6'
+      // 主路径 - 发光红色
+      ctx.strokeStyle = '#ff5555'
       ctx.lineWidth = PATH_LINE_WIDTH / totalScale
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
+      ctx.shadowColor = 'rgba(255, 80, 80, 0.8)'
+      ctx.shadowBlur = 10
       
       ctx.beginPath()
       ctx.moveTo(nodesWithCoords[0].x!, nodesWithCoords[0].y!)
@@ -562,8 +592,12 @@ const handlePointerMove = (e: MouseEvent | TouchEvent) => {
     const node = props.nodes.find(n => n.id === draggingNodeId.value)
     
     if (node) {
-      const newX = Math.max(0, Math.min(props.mapInfo.width || 0, worldPos.x + dragOffset.value.x))
-      const newY = Math.max(0, Math.min(props.mapInfo.height || 0, worldPos.y + dragOffset.value.y))
+      // 使用实际图片尺寸进行坐标限制
+      const imgWidth = actualImageSize.value.width || props.mapInfo.width || 10000
+      const imgHeight = actualImageSize.value.height || props.mapInfo.height || 10000
+      
+      const newX = Math.max(0, Math.min(imgWidth, worldPos.x + dragOffset.value.x))
+      const newY = Math.max(0, Math.min(imgHeight, worldPos.y + dragOffset.value.y))
       
       // 更新节点位置（触发响应式更新）
       node.x = newX

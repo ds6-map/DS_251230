@@ -30,7 +30,7 @@ const routes: RouteRecordRaw[] = [
     path: '/map3d',
     name: 'Map3D',
     component: () => import('@/views/Map3DView.vue'),
-    meta: { title: '3D地图' }
+    meta: { title: '3D Map' }
   }
 ]
 
