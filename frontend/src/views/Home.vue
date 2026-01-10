@@ -321,99 +321,174 @@ const openDestinationSelection = () => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #000000;
+  background: var(--bg);
   overflow: hidden;
+  position: relative;
 }
 
-/* ========== 顶部工具栏 ========== */
+/* 背景光效 */
+.home-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: radial-gradient(ellipse at 50% -20%, rgba(0, 229, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ========== 顶部工具栏 - iOS 26 玻璃态 ========== */
 .nav-toolbar {
   flex-shrink: 0;
-  padding: 10px 16px;
-  background: rgba(30, 35, 50, 0.9);
-  backdrop-filter: blur(40px) saturate(150%);
-  -webkit-backdrop-filter: blur(40px) saturate(150%);
-  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+  padding: 12px 16px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  background: linear-gradient(180deg,
+    rgba(15, 25, 50, 0.85) 0%,
+    rgba(10, 20, 40, 0.75) 100%
+  );
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.12);
+  position: relative;
+  z-index: 10;
+}
+
+/* 工具栏顶部高光 */
+.nav-toolbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(0, 229, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.06) 80%,
+    transparent 100%
+  );
 }
 
 .toolbar-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 10px;
+  margin-bottom: 12px;
   justify-content: space-between;
 }
 
 .brand-icon {
-  width: 20px;
-  height: 20px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  opacity: 0.9;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(0, 255, 200, 0.1) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 10px;
+  color: var(--primary);
   flex-shrink: 0;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.15);
 }
 
 .brand-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #00e5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
   letter-spacing: -0.03em;
   flex: 1;
 }
 
 .photo-btn {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  border-radius: 8px;
-  background: rgba(30, 35, 50, 0.4);
-  color: #ffffff;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.6) 0%, rgba(10, 25, 45, 0.5) 100%);
+  backdrop-filter: blur(10px);
+  color: var(--text);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   flex-shrink: 0;
   padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.2) 0%, rgba(0, 255, 200, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 280ms ease;
 }
 
 .photo-btn:hover {
-  background: rgba(0, 229, 255, 0.3);
-  transform: scale(1.05);
+  border-color: rgba(0, 229, 255, 0.35);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.photo-btn:hover::before {
+  opacity: 1;
 }
 
 .photo-btn:active {
   transform: scale(0.95);
 }
 
-/* ========== 路线选择器 ========== */
+/* ========== 路线选择器 - 高级玻璃卡片 ========== */
 .route-selector {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .location-input {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  background: rgba(30, 35, 50, 0.3);
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  border-radius: 10px;
+  gap: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.5) 0%, rgba(10, 25, 45, 0.4) 100%);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.location-input::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
 }
 
 .location-input:hover {
-  background: rgba(21, 81, 80, 0.5);
-  border-color: rgba(0, 229, 255, 0.4);
+  background: linear-gradient(135deg, rgba(20, 40, 70, 0.6) 0%, rgba(15, 35, 60, 0.5) 100%);
+  border-color: rgba(0, 229, 255, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 229, 255, 0.1);
+  transform: translateY(-1px);
 }
 
 .location-input:active {
@@ -421,20 +496,49 @@ const openDestinationSelection = () => {
 }
 
 .input-indicator {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+  position: relative;
+}
+
+.input-indicator::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  opacity: 0.3;
 }
 
 .input-indicator.start {
-  background: #8b95a8;
-  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+  background: linear-gradient(135deg, #7a8ba8 0%, #5a6b88 100%);
+  box-shadow: 0 0 10px rgba(122, 139, 168, 0.4);
+}
+
+.input-indicator.start::after {
+  background: #7a8ba8;
+  animation: pulse-soft 2s ease-in-out infinite;
 }
 
 .input-indicator.end {
+  background: linear-gradient(135deg, #00e5ff 0%, #00ffc8 100%);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+}
+
+.input-indicator.end::after {
   background: #00e5ff;
-  box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.8); opacity: 0; }
 }
 
 .input-content {
@@ -442,51 +546,54 @@ const openDestinationSelection = () => {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  gap: 2px;
 }
 
 .input-label {
   font-size: 10px;
-  color: #8b95a8;
-  font-weight: 500;
+  color: var(--text-muted);
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   line-height: 1;
 }
 
 .input-value {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  color: #ffffff;
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-top: 2px;
 }
 
 .input-arrow {
-  color: #8b95a8;
+  color: var(--text-muted);
   flex-shrink: 0;
-  transition: transform 0.2s;
+  transition: all 280ms ease;
 }
 
 .location-input:hover .input-arrow {
-  transform: translateX(3px);
-  color: #00e5ff;
+  transform: translateX(4px);
+  color: var(--primary);
 }
 
 .route-arrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #8b95a8;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(0, 255, 200, 0.05) 100%);
+  border-radius: 8px;
+  color: var(--primary);
   flex-shrink: 0;
-  padding: 0 4px;
 }
 
-/* ========== 操作按钮 ========== */
+/* ========== 操作按钮 - 渐变玻璃效果 ========== */
 .toolbar-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-top: 0;
 }
 
@@ -495,21 +602,35 @@ const openDestinationSelection = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  border-radius: 10px;
-  background: rgba(30, 35, 50, 0.3);
-  color: #ffffff;
+  gap: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.5) 0%, rgba(10, 25, 45, 0.4) 100%);
+  backdrop-filter: blur(16px);
+  color: var(--text);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
 }
 
 .action-btn:hover {
-  background: rgba(21, 81, 80, 0.5);
-  border-color: rgba(0, 229, 255, 0.4);
+  background: linear-gradient(135deg, rgba(20, 40, 70, 0.6) 0%, rgba(15, 35, 60, 0.5) 100%);
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .action-btn:active {
@@ -517,17 +638,30 @@ const openDestinationSelection = () => {
 }
 
 .action-btn.primary {
-  background: #00e5ff;
+  background: linear-gradient(135deg, #00e5ff 0%, #00ffc8 100%);
   border: none;
-  color: #000;
-  font-weight: 600;
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+  color: #050810;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.35),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.action-btn.primary::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  transition: left 400ms ease;
 }
 
 .action-btn.primary:hover {
-  background: #00d4ff;
-  color: #000;
-  box-shadow: 0 0 16px rgba(0, 229, 255, 0.5);
+  box-shadow: 0 6px 28px rgba(0, 229, 255, 0.45),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.action-btn.primary:hover::before {
+  left: 100%;
 }
 
 /* ========== 聊天主区域 ========== */
@@ -536,74 +670,112 @@ const openDestinationSelection = () => {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 12px;
+  padding: 12px 16px;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
-/* ========== 搜索弹窗 ========== */
+/* ========== 搜索弹窗 - iOS 26 风格 ========== */
 .search-popup {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #151b2e;
+  background: linear-gradient(180deg, rgba(15, 25, 50, 0.98) 0%, rgba(10, 20, 40, 1) 100%);
 }
 
 .popup-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 20px 18px;
-  background: rgba(30, 35, 50, 0.98);
-  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+  padding: 24px 20px 20px;
+  background: linear-gradient(180deg, rgba(20, 35, 60, 0.9) 0%, rgba(15, 30, 50, 0.8) 100%);
+  backdrop-filter: blur(40px);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+  position: relative;
+}
+
+.popup-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.25), transparent);
 }
 
 .popup-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #00e5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
   letter-spacing: -0.02em;
 }
 
 .popup-close {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  color: #8b95a8;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 280ms ease;
 }
 
 .popup-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text);
+  transform: rotate(90deg);
 }
 
 .search-input-wrap {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 18px 20px;
-  padding: 16px 18px;
-  background: rgba(30, 35, 50, 0.6);
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  border-radius: 14px;
-  transition: all 0.2s;
+  gap: 14px;
+  margin: 20px 20px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.6) 0%, rgba(10, 25, 45, 0.5) 100%);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 16px;
+  transition: all 280ms ease;
+  position: relative;
+}
+
+.search-input-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  border-radius: 16px 16px 0 0;
 }
 
 .search-input-wrap:focus-within {
-  border-color: rgba(39, 165, 162, 0.5);
-  box-shadow: 0 0 0 4px rgba(39, 165, 162, 0.1);
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.08), 0 0 20px rgba(0, 229, 255, 0.1);
 }
 
 .search-icon {
-  color: #8b95a8;
+  color: var(--text-muted);
   flex-shrink: 0;
+  transition: color 280ms ease;
+}
+
+.search-input-wrap:focus-within .search-icon {
+  color: var(--primary);
 }
 
 .search-input {
@@ -611,30 +783,32 @@ const openDestinationSelection = () => {
   border: none;
   background: none;
   font-size: 16px;
-  color: #ffffff;
+  font-weight: 500;
+  color: var(--text);
   outline: none;
 }
 
 .search-input::placeholder {
-  color: #8b95a8;
+  color: var(--text-light);
 }
 
 .search-clear {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  color: #8b95a8;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 280ms ease;
 }
 
 .search-clear:hover {
-  background: rgba(21, 81, 80, 0.6);
+  background: rgba(0, 229, 255, 0.15);
+  color: var(--primary);
 }
 
 .search-results {
@@ -646,37 +820,63 @@ const openDestinationSelection = () => {
 .results-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .result-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: rgba(30, 35, 50, 0.4);
-  border: 1px solid rgba(0, 229, 255, 0.15);
-  border-radius: 14px;
+  gap: 16px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.5) 0%, rgba(10, 25, 45, 0.4) 100%);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 229, 255, 0.08);
+  border-radius: 18px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.result-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #00e5ff 0%, #00ffc8 100%);
+  opacity: 0;
+  transition: opacity 280ms ease;
 }
 
 .result-item:hover {
-  background: rgba(30, 35, 50, 0.5);
-  border-color: rgba(0, 229, 255, 0.4);
-  transform: translateX(4px);
+  background: linear-gradient(135deg, rgba(20, 40, 70, 0.6) 0%, rgba(15, 35, 60, 0.5) 100%);
+  border-color: rgba(0, 229, 255, 0.2);
+  transform: translateX(6px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.result-item:hover::before {
+  opacity: 1;
 }
 
 .result-icon {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  color: #00e5ff;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.12) 0%, rgba(0, 255, 200, 0.08) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 14px;
+  color: var(--primary);
   flex-shrink: 0;
+  transition: all 280ms ease;
+}
+
+.result-item:hover .result-icon {
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
 }
 
 .result-info {
@@ -684,29 +884,29 @@ const openDestinationSelection = () => {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  gap: 4px;
 }
 
 .result-name {
   font-size: 16px;
-  font-weight: 500;
-  color: #ffffff;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .result-detail {
   font-size: 13px;
-  color: #8b95a8;
-  margin-top: 2px;
+  color: var(--text-muted);
 }
 
 .result-arrow {
-  color: #8b95a8;
+  color: var(--text-light);
   flex-shrink: 0;
-  transition: transform 0.2s;
+  transition: all 280ms ease;
 }
 
 .result-item:hover .result-arrow {
-  transform: translateX(3px);
-  color: #00e5ff;
+  transform: translateX(4px);
+  color: var(--primary);
 }
 
 .empty-results {
@@ -716,26 +916,43 @@ const openDestinationSelection = () => {
   justify-content: center;
   padding: 80px 20px;
   text-align: center;
-  color: #8b95a8;
+  color: var(--text-muted);
 }
 
 .empty-icon {
-  margin-bottom: 16px;
-  color: #3a3a3c;
+  margin-bottom: 20px;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.5) 0%, rgba(10, 25, 45, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  color: var(--text-light);
 }
 
 /* ========== 移动端适配 ========== */
 @media (max-width: 768px) {
   .nav-toolbar {
     padding: 16px;
+    padding-top: max(16px, env(safe-area-inset-top));
   }
-  
+
   .brand-title {
     font-size: 20px;
   }
-  
+
   .chat-main {
     padding: 12px;
+  }
+
+  .location-input {
+    padding: 10px 12px;
+  }
+
+  .action-btn {
+    padding: 11px 14px;
   }
 }
 </style>

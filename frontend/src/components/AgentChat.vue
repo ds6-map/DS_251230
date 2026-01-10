@@ -488,375 +488,574 @@ onUnmounted(() => {
   min-height: 0;
 }
 
+/* ========== 主卡片 - iOS 26 高级玻璃态 ========== */
 .card {
   flex: 1;
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  border-radius: 20px;
-  background: rgba(30, 35, 50, 0.7);
-  backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(15, 30, 60, 0.6) 0%, rgba(10, 25, 50, 0.5) 100%);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(0, 229, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.06) 80%,
+    transparent 100%
+  );
+}
+
+/* ========== 消息区域 ========== */
 .messages {
   flex: 1;
   overflow-y: auto;
-  padding: 18px 16px 12px;
+  padding: 20px 18px 14px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent);
 }
 
 .row {
   display: flex;
-  margin: 12px 0;
+  margin: 14px 0;
 }
 .row.user {
   justify-content: flex-end;
 }
+
+/* ========== 聊天气泡 - 玻璃态 ========== */
 .bubble {
-  max-width: min(760px, 92%);
-  border-radius: 18px;
-  border: 1px solid rgba(0, 229, 255, 0.15);
-  padding: 14px 16px;
-  line-height: 1.6;
-  background: rgba(30, 35, 50, 0.8);
+  max-width: min(760px, 90%);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  padding: 16px 18px;
+  line-height: 1.65;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.6) 0%, rgba(10, 25, 45, 0.5) 100%);
+  backdrop-filter: blur(16px);
+  position: relative;
+  transition: all 280ms ease;
 }
+
+.bubble::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+  border-radius: 20px 20px 0 0;
+}
+
 .bubble.user {
-  background: rgba(0, 229, 255, 0.1);
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(0, 255, 200, 0.1) 100%);
   border-color: rgba(0, 229, 255, 0.2);
 }
-.bubble.bot {
-  background: rgba(30, 35, 50, 0.9);
+
+.bubble.user::before {
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent);
 }
+
+.bubble.bot {
+  background: linear-gradient(135deg, rgba(20, 35, 60, 0.7) 0%, rgba(15, 30, 55, 0.6) 100%);
+}
+
 .bubbleTitle {
   font-size: 12px;
-  color: #8b95a8;
-  margin-bottom: 8px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-weight: 600;
 }
+
 .bubbleText {
   white-space: pre-wrap;
-  color: #ffffff;
+  color: var(--text);
+  font-size: 15px;
 }
+
 .meta {
   margin-top: 8px;
   font-size: 12px;
-  color: #8b95a8;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  background: rgba(0, 229, 255, 0.08);
+  border-radius: 6px;
+  display: inline-block;
 }
 
+/* ========== 输入区域 - 玻璃态 ========== */
 .composer {
-  border-top: 1px solid rgba(0, 229, 255, 0.15);
-  padding: 14px;
+  border-top: 1px solid rgba(0, 229, 255, 0.1);
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: rgba(30, 35, 50, 0.9);
-  backdrop-filter: blur(20px);
+  gap: 14px;
+  background: linear-gradient(180deg, rgba(15, 25, 50, 0.8) 0%, rgba(10, 20, 40, 0.85) 100%);
+  backdrop-filter: blur(24px);
+  position: relative;
+}
+
+.composer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent);
 }
 
 .inputBar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .input {
   flex: 1;
   min-width: 220px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  background: rgba(30, 35, 50, 0.5);
+  padding: 15px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.5) 0%, rgba(10, 25, 45, 0.4) 100%);
+  backdrop-filter: blur(10px);
   outline: none;
   font-size: 16px;
-  color: #ffffff;
-  transition: all 0.25s;
-}
-.input:focus {
-  border-color: rgba(0, 229, 255, 0.4);
-  box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.1);
-}
-.input::placeholder {
-  color: #8b95a8;
+  font-weight: 500;
+  color: var(--text);
+  transition: all 280ms ease;
 }
 
+.input:focus {
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.08), 0 0 20px rgba(0, 229, 255, 0.1);
+  background: linear-gradient(135deg, rgba(20, 35, 60, 0.6) 0%, rgba(15, 30, 50, 0.5) 100%);
+}
+
+.input::placeholder {
+  color: var(--text-light);
+}
+
+/* ========== 按钮系统 - iOS 26 风格 ========== */
 .btn {
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  background: rgba(30, 35, 50, 0.5);
-  color: #ffffff;
+  padding: 13px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.5) 0%, rgba(10, 25, 45, 0.4) 100%);
+  backdrop-filter: blur(10px);
+  color: var(--text);
   cursor: pointer;
-  transition: all 0.25s;
+  transition: all 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   white-space: nowrap;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
 }
+
 .btn:hover {
-  border-color: rgba(0, 229, 255, 0.4);
-  background: rgba(30, 35, 50, 0.8);
+  border-color: rgba(0, 229, 255, 0.25);
+  background: linear-gradient(135deg, rgba(20, 40, 70, 0.6) 0%, rgba(15, 35, 60, 0.5) 100%);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.12);
 }
+
 .btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
+
 .btn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
+
 .btn.primary {
-  color: #000;
+  color: #050810;
   border: none;
-  background: #00e5ff;
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+  background: linear-gradient(135deg, #00e5ff 0%, #00ffc8 100%);
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(0, 229, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
+
+.btn.primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 400ms ease;
+}
+
 .btn.primary:hover {
-  background: #00d4ff;
-  box-shadow: 0 0 16px rgba(0, 229, 255, 0.5);
+  box-shadow: 0 6px 24px rgba(0, 229, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
 }
+
+.btn.primary:hover::before {
+  left: 100%;
+}
+
 .btn.ghost {
   background: transparent;
-  border-color: rgba(0, 229, 255, 0.15);
+  border-color: rgba(0, 229, 255, 0.1);
 }
+
+.btn.ghost:hover {
+  background: rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.2);
+}
+
 .btn.danger {
   color: #fff;
   border: none;
-  background: #ff4757;
-}
-.btn.danger:hover {
-  background: #ff6b7a;
+  background: linear-gradient(135deg, #ff5c72 0%, #ff4757 100%);
+  box-shadow: 0 4px 16px rgba(255, 92, 114, 0.3);
 }
 
+.btn.danger:hover {
+  background: linear-gradient(135deg, #ff7388 0%, #ff5c72 100%);
+  box-shadow: 0 6px 20px rgba(255, 92, 114, 0.4);
+}
+
+/* ========== 工具行 ========== */
 .toolsRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
+
 .hint {
   font-size: 12px;
-  color: #8b95a8;
+  color: var(--text-muted);
+  font-weight: 500;
 }
+
 .progress {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
+
 .progressText {
   font-size: 12px;
-  color: #8b95a8;
+  color: var(--text-muted);
+  font-weight: 500;
 }
+
 .spinner {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid rgba(0, 229, 255, 0.2);
+  border: 2px solid rgba(0, 229, 255, 0.15);
   border-top-color: #00e5ff;
   animation: spin 0.8s linear infinite;
+  filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.4));
 }
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
+/* ========== 导航卡片 - 高级玻璃态 ========== */
 .navCard {
-  margin-top: 12px;
-  border-radius: 16px;
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  background: rgba(30, 35, 50, 0.9);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  margin-top: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  background: linear-gradient(135deg, rgba(15, 30, 60, 0.7) 0%, rgba(10, 25, 50, 0.6) 100%);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   overflow: hidden;
-  transition: all 0.25s;
+  transition: all 280ms ease;
+  position: relative;
 }
+
+.navCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.2), transparent);
+}
+
 .navCard:hover {
-  border-color: rgba(0, 229, 255, 0.3);
+  border-color: rgba(0, 229, 255, 0.22);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 229, 255, 0.1);
 }
+
 .navHeader {
-  padding: 14px 16px 12px;
+  padding: 16px 18px 14px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
 }
+
 .navTitle {
   font-weight: 700;
-  color: #ffffff;
+  font-size: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #00e5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -0.02em;
 }
+
 .navSub {
-  margin-top: 4px;
+  margin-top: 5px;
   font-size: 13px;
-  color: #8b95a8;
+  color: var(--text-muted);
 }
+
 .navChips {
-  padding: 0 16px 14px;
+  padding: 0 18px 16px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
+
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 229, 255, 0.15);
-  background: rgba(0, 229, 255, 0.05);
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(0, 255, 200, 0.05) 100%);
   font-size: 13px;
-  color: #ffffff;
+  color: var(--text);
+  transition: all 280ms ease;
 }
+
+.chip:hover {
+  border-color: rgba(0, 229, 255, 0.2);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.1);
+}
+
 .chip strong {
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--primary);
 }
+
 .chipLabel {
-  color: #8b95a8;
+  color: var(--text-muted);
+  font-size: 12px;
 }
+
 .chipIcon {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: #8b95a8;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--text-muted);
 }
+
 .chipIcon.alt {
-  background: #00e5ff;
+  background: linear-gradient(135deg, #00e5ff 0%, #00d4ff 100%);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
 }
+
 .chipIcon.ok {
-  background: #00ffc8;
+  background: linear-gradient(135deg, #00ffc8 0%, #00e5b0 100%);
+  box-shadow: 0 0 8px rgba(0, 255, 200, 0.4);
 }
+
 .collapse {
   overflow: hidden;
   max-height: 0;
   opacity: 0;
-  transform: translateY(-4px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(-8px);
+  transition: all 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
 .collapse.open {
-  max-height: 420px;
+  max-height: 450px;
   opacity: 1;
   transform: translateY(0);
 }
+
 .mapInset {
-  margin: 0 16px 16px;
-  width: calc(min(760px, 92%) - 32px);
-  height: 280px;
-  border-radius: 14px;
-  border: 1px solid rgba(0, 229, 255, 0.15);
+  margin: 0 18px 18px;
+  width: calc(min(760px, 92%) - 36px);
+  height: 300px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
   overflow: hidden;
-  background: rgba(30, 35, 50, 0.8);
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.6) 0%, rgba(10, 25, 45, 0.5) 100%);
 }
 
+/* ========== 位置识别结果 ========== */
 .matches {
-  margin: 12px 0 0;
-  padding-left: 20px;
+  margin: 14px 0 0;
+  padding-left: 22px;
 }
+
 .matches li {
-  margin: 8px 0;
-  color: #ffffff;
+  margin: 10px 0;
+  color: var(--text);
 }
+
 .locationQuery {
-  margin: 12px 0 0;
+  margin: 14px 0 0;
   width: min(420px, 100%);
-  border-radius: 14px;
-  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
   overflow: hidden;
-  background: rgba(30, 35, 50, 0.8);
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.6) 0%, rgba(10, 25, 45, 0.5) 100%);
 }
+
 .locationQuery img {
   width: 100%;
   height: auto;
   display: block;
 }
+
 .matchRow {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
+
 .matchThumb {
-  width: 72px;
-  height: 72px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 229, 255, 0.15);
+  width: 76px;
+  height: 76px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
   object-fit: cover;
-  background: rgba(30, 35, 50, 0.8);
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.6) 0%, rgba(10, 25, 45, 0.5) 100%);
   flex: 0 0 auto;
+  transition: all 280ms ease;
 }
+
+.matchThumb:hover {
+  border-color: rgba(0, 229, 255, 0.25);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.15);
+}
+
 .matchMeta {
   min-width: 0;
 }
+
 .matchPath {
   font-size: 12px;
-  color: #8b95a8;
+  color: var(--text-muted);
   word-break: break-all;
+  margin-top: 4px;
 }
 
+/* ========== 动画 ========== */
 .fadeUp-enter-active {
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .fadeUp-enter-from {
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(16px);
 }
 
+/* ========== 相机弹窗 - iOS 26 风格 ========== */
 .modalMask {
   position: fixed;
   inset: 0;
-  background: rgba(10, 14, 31, 0.9);
-  backdrop-filter: blur(8px);
+  background: rgba(5, 8, 16, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   z-index: 1000;
 }
+
 .modalCard {
   width: min(860px, 100%);
-  border-radius: 20px;
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  background: rgba(30, 35, 50, 0.98);
-  backdrop-filter: blur(40px);
+  border-radius: 28px;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  background: linear-gradient(135deg, rgba(15, 30, 60, 0.95) 0%, rgba(10, 25, 50, 0.98) 100%);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
   overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 229, 255, 0.1);
+  position: relative;
 }
+
+.modalCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.25), transparent);
+}
+
 .modalHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  padding: 16px 18px;
-  border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+  gap: 16px;
+  padding: 20px 22px;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+  background: linear-gradient(180deg, rgba(20, 35, 60, 0.5) 0%, transparent 100%);
 }
+
 .modalTitle {
   font-weight: 700;
-  font-size: 17px;
-  color: #ffffff;
+  font-size: 18px;
+  background: linear-gradient(135deg, #ffffff 0%, #00e5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
+
 .modalBody {
-  padding: 18px;
+  padding: 22px;
   display: grid;
-  gap: 14px;
+  gap: 18px;
 }
+
 .videoWrap {
   width: 100%;
   aspect-ratio: 16/9;
-  border-radius: 14px;
-  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 18px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
   overflow: hidden;
-  background: rgba(10, 14, 31, 0.8);
+  background: linear-gradient(135deg, rgba(10, 20, 40, 0.8) 0%, rgba(5, 15, 30, 0.9) 100%);
 }
+
 video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+
 .modalActions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 </style>

@@ -304,71 +304,127 @@ const goBack = () => {
 <style scoped>
 .navigation-page {
   min-height: 100vh;
-  background: #000000;
-  padding-bottom: 80px;
+  background: var(--bg);
+  padding-bottom: 90px;
+  position: relative;
 }
 
-/* ========== 顶部导航 ========== */
+/* 背景光效 */
+.navigation-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 350px;
+  background: radial-gradient(ellipse at 50% -10%, rgba(0, 229, 255, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ========== 顶部导航 - iOS 26 玻璃态 ========== */
 .nav-header {
   display: flex;
   align-items: center;
   padding: 18px 20px;
-  background: rgba(28, 28, 30, 0.9);
-  backdrop-filter: blur(40px) saturate(150%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: max(18px, env(safe-area-inset-top));
+  background: linear-gradient(180deg,
+    rgba(15, 25, 50, 0.9) 0%,
+    rgba(10, 20, 40, 0.8) 100%
+  );
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
+.nav-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.2), transparent);
+}
+
 .back-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #f5f5f7;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.6) 0%, rgba(10, 25, 45, 0.5) 100%);
+  backdrop-filter: blur(10px);
+  color: var(--text);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s;
+  transition: all 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(-2px);
+  background: linear-gradient(135deg, rgba(20, 40, 70, 0.7) 0%, rgba(15, 35, 60, 0.6) 100%);
+  border-color: rgba(0, 229, 255, 0.25);
+  transform: translateX(-3px);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.15);
 }
 
 .header-title {
   flex: 1;
   text-align: center;
   font-size: 18px;
-  font-weight: 600;
-  color: #f5f5f7;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #00e5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
   letter-spacing: -0.02em;
 }
 
 .header-spacer {
-  width: 40px;
+  width: 42px;
 }
 
 .content {
   padding: 20px;
+  position: relative;
+  z-index: 1;
 }
 
-/* ========== 概览卡片 ========== */
+/* ========== 概览卡片 - 高级玻璃态 ========== */
 .overview-card {
-  padding: 24px;
-  margin-bottom: 20px;
+  padding: 26px;
+  margin-bottom: 24px;
 }
 
 .glass-card {
-  background: rgba(28, 28, 30, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 18px;
-  backdrop-filter: blur(40px) saturate(150%);
+  background: linear-gradient(135deg, rgba(15, 30, 60, 0.6) 0%, rgba(10, 25, 50, 0.5) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 24px;
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(0, 229, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.06) 80%,
+    transparent 100%
+  );
 }
 
 .route-endpoints {
@@ -381,120 +437,169 @@ const goBack = () => {
 .endpoint {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   width: 100%;
-  padding: 14px 18px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 14px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.4) 0%, rgba(10, 25, 45, 0.3) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  transition: all 280ms ease;
+}
+
+.endpoint:hover {
+  background: linear-gradient(135deg, rgba(20, 40, 65, 0.5) 0%, rgba(15, 35, 55, 0.4) 100%);
 }
 
 .endpoint-dot {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   flex-shrink: 0;
+  position: relative;
+}
+
+.endpoint-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.4); opacity: 0; }
 }
 
 .endpoint-dot.start {
-  background: #a1a1a6;
-  box-shadow: 0 0 8px rgba(161, 161, 166, 0.4);
+  background: linear-gradient(135deg, #7a8ba8 0%, #5a6b88 100%);
+  box-shadow: 0 0 12px rgba(122, 139, 168, 0.4);
+}
+
+.endpoint-dot.start::after {
+  background: #7a8ba8;
 }
 
 .endpoint-dot.end {
-  background: #f5f5f7;
-  box-shadow: 0 0 8px rgba(245, 245, 247, 0.4);
+  background: linear-gradient(135deg, #00e5ff 0%, #00ffc8 100%);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+}
+
+.endpoint-dot.end::after {
+  background: #00e5ff;
 }
 
 .endpoint-info {
   display: flex;
   flex-direction: column;
+  gap: 3px;
 }
 
 .endpoint-label {
   font-size: 11px;
-  color: #636366;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  font-weight: 600;
 }
 
 .endpoint-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #f5f5f7;
-  margin-top: 2px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .route-line {
-  width: 1px;
-  height: 20px;
-  margin: 4px 0;
+  width: 2px;
+  height: 24px;
+  margin: 6px 0;
   position: relative;
+  border-radius: 1px;
+  overflow: hidden;
 }
 
 .line-track {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #636366, #3a3a3c);
+  background: linear-gradient(180deg, #7a8ba8 0%, #00e5ff 100%);
+  animation: line-flow 1.5s ease-in-out infinite;
+}
+
+@keyframes line-flow {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
 }
 
 .route-stats {
   display: flex;
   align-items: stretch;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 14px;
-  padding: 18px;
+  background: linear-gradient(135deg, rgba(10, 20, 40, 0.4) 0%, rgba(5, 15, 30, 0.3) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 18px;
+  padding: 20px;
 }
 
 .stat-item {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .stat-icon {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  color: #a1a1a6;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(0, 255, 200, 0.06) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  border-radius: 12px;
+  color: var(--primary);
   flex-shrink: 0;
+  transition: all 280ms ease;
+}
+
+.stat-item:hover .stat-icon {
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
 }
 
 .stat-content {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .stat-value {
-  font-size: 15px;
-  font-weight: 600;
-  color: #f5f5f7;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .stat-label {
   font-size: 11px;
-  color: #636366;
-  margin-top: 2px;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .stat-divider {
   width: 1px;
-  background: rgba(255, 255, 255, 0.06);
-  margin: 0 16px;
+  background: linear-gradient(180deg, transparent, rgba(0, 229, 255, 0.15), transparent);
+  margin: 0 18px;
 }
 
-/* ========== 视图切换 ========== */
+/* ========== 视图切换 - 玻璃态选项卡 ========== */
 .view-switch {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  background: rgba(28, 28, 30, 0.6);
+  gap: 6px;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, rgba(10, 20, 40, 0.6) 0%, rgba(5, 15, 30, 0.5) 100%);
+  backdrop-filter: blur(16px);
   padding: 6px;
-  border-radius: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .switch-btn {
@@ -505,58 +610,62 @@ const goBack = () => {
   gap: 8px;
   padding: 14px 18px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: transparent;
-  color: #636366;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.25s;
+  transition: all 280ms ease;
 }
 
 .switch-btn:hover {
-  color: #a1a1a6;
+  color: var(--text);
 }
 
 .switch-btn.active {
-  background: rgba(255, 255, 255, 0.08);
-  color: #f5f5f7;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(0, 255, 200, 0.1) 100%);
+  color: var(--primary);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.15);
 }
 
 /* ========== 楼层选择 ========== */
 .floor-tabs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 18px;
   flex-wrap: wrap;
 }
 
 .floor-tab {
-  padding: 12px 20px;
+  padding: 13px 22px;
   font-size: 14px;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  background: rgba(28, 28, 30, 0.6);
-  color: #636366;
+  font-weight: 700;
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.5) 0%, rgba(10, 25, 45, 0.4) 100%);
+  backdrop-filter: blur(10px);
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.25s;
+  transition: all 280ms ease;
 }
 
 .floor-tab:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #a1a1a6;
+  background: linear-gradient(135deg, rgba(20, 40, 70, 0.6) 0%, rgba(15, 35, 60, 0.5) 100%);
+  color: var(--text);
+  border-color: rgba(0, 229, 255, 0.2);
 }
 
 .floor-tab.active {
-  background: #f5f5f7;
+  background: linear-gradient(135deg, #00e5ff 0%, #00ffc8 100%);
   border-color: transparent;
-  color: #000;
+  color: #050810;
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.35);
 }
 
 /* ========== 地图卡片 ========== */
 .map-card {
-  height: 420px;
+  height: 440px;
   padding: 0;
   overflow: hidden;
 }
@@ -565,35 +674,48 @@ const goBack = () => {
 .steps-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .step-card {
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  padding: 20px;
-  background: rgba(28, 28, 30, 0.7);
+  gap: 18px;
+  padding: 22px;
+  background: linear-gradient(135deg, rgba(15, 30, 60, 0.5) 0%, rgba(10, 25, 50, 0.4) 100%);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 16px;
-  transition: all 0.25s;
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 229, 255, 0.06);
+  border-radius: 20px;
+  transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.step-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
 }
 
 .step-card:hover {
-  background: rgba(28, 28, 30, 0.9);
-  border-color: rgba(255, 255, 255, 0.08);
-  transform: translateX(4px);
+  background: linear-gradient(135deg, rgba(20, 40, 70, 0.6) 0%, rgba(15, 35, 60, 0.5) 100%);
+  border-color: rgba(0, 229, 255, 0.15);
+  transform: translateX(6px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 .step-connector {
   position: absolute;
-  left: 37px;
-  top: -12px;
-  width: 1px;
-  height: 12px;
-  background: linear-gradient(180deg, transparent, #3a3a3c);
+  left: 40px;
+  top: -14px;
+  width: 2px;
+  height: 14px;
+  background: linear-gradient(180deg, transparent, rgba(0, 229, 255, 0.3));
+  border-radius: 1px;
 }
 
 .step-card:first-child .step-connector {
@@ -601,31 +723,41 @@ const goBack = () => {
 }
 
 .step-marker {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.04);
-  color: #a1a1a6;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
   flex-shrink: 0;
+  transition: all 280ms ease;
 }
 
 .step-marker.start {
-  background: rgba(161, 161, 166, 0.15);
-  color: #a1a1a6;
+  background: linear-gradient(135deg, rgba(122, 139, 168, 0.2) 0%, rgba(90, 107, 136, 0.15) 100%);
+  border-color: rgba(122, 139, 168, 0.25);
+  color: #7a8ba8;
 }
 
 .step-marker.end {
-  background: rgba(245, 245, 247, 0.15);
-  color: #f5f5f7;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.2) 0%, rgba(0, 255, 200, 0.15) 100%);
+  border-color: rgba(0, 229, 255, 0.25);
+  color: var(--primary);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
 }
 
 .step-marker.stairs,
 .step-marker.lift {
-  background: rgba(100, 210, 255, 0.1);
-  color: #64d2ff;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(0, 255, 200, 0.1) 100%);
+  border-color: rgba(0, 229, 255, 0.2);
+  color: var(--primary);
+}
+
+.step-card:hover .step-marker {
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.15);
 }
 
 .step-body {
@@ -635,71 +767,77 @@ const goBack = () => {
 
 .step-title {
   font-size: 11px;
-  color: #636366;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
+  letter-spacing: 0.8px;
+  margin-bottom: 5px;
+  font-weight: 600;
 }
 
 .step-name {
-  font-size: 17px;
-  font-weight: 600;
-  color: #f5f5f7;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .step-instruction {
   font-size: 15px;
   font-weight: 500;
-  color: #f5f5f7;
-  line-height: 1.5;
+  color: var(--text);
+  line-height: 1.6;
 }
 
 .step-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .meta-tag {
   display: inline-flex;
   align-items: center;
-  padding: 5px 12px;
+  padding: 6px 14px;
   font-size: 12px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.06);
-  color: #a1a1a6;
-  border-radius: 8px;
+  font-weight: 700;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.12) 0%, rgba(0, 255, 200, 0.08) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  color: var(--primary);
+  border-radius: 10px;
 }
 
 .meta-text {
   font-size: 13px;
-  color: #636366;
+  color: var(--text-muted);
+  line-height: 1.8;
 }
 
 .meta-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
+  gap: 6px;
+  padding: 6px 14px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   background: rgba(255, 255, 255, 0.04);
-  color: #a1a1a6;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  border-radius: 10px;
 }
 
 .meta-badge.alt {
-  background: rgba(100, 210, 255, 0.08);
-  color: #64d2ff;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(0, 255, 200, 0.06) 100%);
+  border-color: rgba(0, 229, 255, 0.15);
+  color: var(--primary);
 }
 
 .start-card {
-  border-left: 3px solid #a1a1a6;
+  border-left: 4px solid #7a8ba8;
 }
 
 .end-card {
-  border-left: 3px solid #f5f5f7;
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(180deg, #00e5ff 0%, #00ffc8 100%) 1;
 }
 
 /* ========== 空状态 ========== */
@@ -709,26 +847,37 @@ const goBack = () => {
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  padding: 40px 20px;
+  padding: 50px 20px;
   text-align: center;
 }
 
 .empty-icon {
-  margin-bottom: 24px;
-  color: #3a3a3c;
+  width: 100px;
+  height: 100px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(15, 30, 55, 0.5) 0%, rgba(10, 25, 45, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 28px;
+  color: var(--text-light);
 }
 
 .empty-title {
-  font-size: 22px;
-  font-weight: 600;
-  color: #f5f5f7;
-  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #00e5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 12px;
 }
 
 .empty-desc {
   font-size: 15px;
-  color: #636366;
-  margin: 0 0 28px;
+  color: var(--text-muted);
+  margin: 0 0 32px;
 }
 
 /* ========== 按钮 ========== */
@@ -736,35 +885,56 @@ const goBack = () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 14px 28px;
+  gap: 10px;
+  padding: 16px 32px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.25s;
+  transition: all 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary {
-  background: #f5f5f7;
-  color: #000;
+  background: linear-gradient(135deg, #00e5ff 0%, #00ffc8 100%);
+  color: #050810;
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.35),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 400ms ease;
 }
 
 .btn-primary:hover {
-  background: #e5e5e7;
+  box-shadow: 0 6px 28px rgba(0, 229, 255, 0.45),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
+}
+
+.btn-primary:hover::before {
+  left: 100%;
 }
 
 /* ========== 动画 ========== */
 .slide-up {
-  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -777,24 +947,28 @@ const goBack = () => {
   .content {
     padding: 16px;
   }
-  
+
   .overview-card {
-    padding: 20px;
+    padding: 22px;
   }
-  
+
   .route-stats {
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
   }
-  
+
   .stat-divider {
     width: 100%;
     height: 1px;
     margin: 0;
   }
-  
+
   .map-card {
-    height: 340px;
+    height: 360px;
+  }
+
+  .step-card {
+    padding: 18px;
   }
 }
 </style>
