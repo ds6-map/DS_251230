@@ -1,7 +1,3 @@
-Here's the fully rewritten README in English with a polished, high-quality GitHub style:
-
----
-
 <div align="center">
 
 <img src="https://img.shields.io/badge/version-1.0.0-blue?style=flat-square" /> <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" /> <img src="https://img.shields.io/badge/python-3.10+-blue?style=flat-square&logo=python" /> <img src="https://img.shields.io/badge/node-18+-green?style=flat-square&logo=node.js" /> <img src="https://img.shields.io/badge/FastAPI-async-009688?style=flat-square&logo=fastapi" /> <img src="https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js" />
