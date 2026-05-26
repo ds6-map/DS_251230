@@ -1,240 +1,230 @@
-# 校园室内导航系统
+Here's the fully rewritten README in English with a polished, high-quality GitHub style:
 
-一个移动端优先的校园室内导航 Web 应用，支持视觉定位、路径规划和可视化导航。
+---
 
-## 功能
+<div align="center">
 
-- **自己定位**：上传周围环境照片，AI 识别当前位置（支持 CLIP + ChromaDB 向量检索）
-- **搜索目的地**：输入关键词搜索目标位置，支持模糊匹配
-- **路径规划**：使用 A* 算法计算最短路径，支持多楼层导航
-- **可视化导航**：在底图上显示节点位置和导航路径，支持 2D 和 3D 视图
-- **地图编辑器**：可视化界面标注节点位置，上传底图，支持拖拽编辑
-- **智能对话**：集成 OpenAI API 的智能助手，支持自然语言导航查询
-- **外部导航**：集成 Google Maps API，支持校园外导航
-- **3D 地图视图**：三维地图展示，支持楼层叠加和路径可视化
+<img src="https://img.shields.io/badge/version-1.0.0-blue?style=flat-square" /> <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" /> <img src="https://img.shields.io/badge/python-3.10+-blue?style=flat-square&logo=python" /> <img src="https://img.shields.io/badge/node-18+-green?style=flat-square&logo=node.js" /> <img src="https://img.shields.io/badge/FastAPI-async-009688?style=flat-square&logo=fastapi" /> <img src="https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js" />
 
-## 技术栈
+# 🏛️ Campus Indoor Navigation System
 
-### 后端
+**A mobile-first indoor navigation web app with AI-powered visual localization, multi-floor pathfinding, and natural language queries.**
 
-- **FastAPI** (全异步 Web 框架)
-- **SQLAlchemy Async + SQLite** (异步 ORM，文件数据库，无需单独安装)
-- **Alembic** (数据库迁移工具)
-- **Pydantic V2** (数据验证和序列化)
-- **A* 算法** (路径规划，启发式搜索)
-- **OpenAI API** (大语言模型集成，支持工具调用)
-- **Google Maps API** (外部导航服务)
-- **CLIP + ChromaDB** (图像特征提取和向量检索)
-- **Pillow** (图像处理)
+[Getting Started](#-quick-start) · [API Reference](#-api-reference) · [Architecture](#-project-structure) · [Deployment](#-deployment)
 
-### 前端
+</div>
 
-- **Vue 3 + TypeScript + Vite** (现代前端框架，类型安全，快速构建)
-- **Vant UI** (移动端优先的组件库)
-- **Pinia** (Vue 3 官方状态管理库)
-- **Vue Router 4** (前端路由管理)
-- **Canvas API + CSS 3D** (2D/3D 地图渲染)
-- **Tailwind CSS** (实用优先的 CSS 框架)
-- **Axios** (HTTP 客户端)
-- **Marked** (Markdown 解析)
+---
 
-## 项目结构
+## ✨ Features
+
+| Feature                    | Description                                                                                  |
+| -------------------------- | -------------------------------------------------------------------------------------------- |
+| 📸 **Visual Localization** | Upload a photo of your surroundings — CLIP + ChromaDB identifies your location automatically |
+| 🔍 **Destination Search**  | Fuzzy keyword search across all mapped locations                                             |
+| 🗺️ **Path Planning**       | A\* algorithm computes the shortest path, with full multi-floor support                      |
+| 🧭 **Visual Navigation**   | Real-time 2D and 3D map views with animated route overlays                                   |
+| ✏️ **Map Editor**          | Drag-and-drop node placement on uploaded floor plans                                         |
+| 🤖 **Intelligent Chat**    | Natural language navigation queries powered by OpenAI function calling                       |
+| 🌐 **External Navigation** | Google Maps integration for routes beyond campus                                             |
+| 🏗️ **3D Map View**         | Three-dimensional floor-stacked visualization with path rendering                            |
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+
+- **FastAPI** — fully async web framework
+- **SQLAlchemy Async + SQLite** — zero-config async ORM with file-based database
+- **Alembic** — database schema migrations
+- **Pydantic V2** — data validation and serialization
+- **A\* Algorithm** — heuristic shortest-path planning
+- **OpenAI API** — LLM integration with tool/function calling
+- **Google Maps API** — external routing service
+- **CLIP + ChromaDB** — image feature extraction and vector similarity search
+- **Pillow** — image processing
+
+### Frontend
+
+- **Vue 3 + TypeScript + Vite** — modern, type-safe frontend with fast HMR
+- **Vant UI** — mobile-first component library
+- **Pinia** — Vue 3 official state management
+- **Vue Router 4** — client-side routing
+- **Canvas API + CSS 3D** — 2D/3D map rendering
+- **Tailwind CSS** — utility-first styling
+- **Axios** — HTTP client
+- **Marked** — Markdown rendering
+
+---
+
+## 📂 Project Structure
 
 ```
-├── backend/                          # 后端代码 / Backend Code
+campus-indoor-nav/
+├── backend/
 │   ├── app/
-│   │   ├── main.py                   # FastAPI 应用入口 / FastAPI App Entry
-│   │   ├── core/
-│   │   │   └── config.py            # 应用配置 / App Configuration
-│   │   ├── api/endpoints/            # API 端点 / API Endpoints
-│   │   │   ├── navigation.py         # 导航 API / Navigation API
-│   │   │   ├── recognition.py        # 图像识别 API / Image Recognition API
-│   │   │   ├── maps.py               # 地图管理 API / Maps Management API
-│   │   │   └── chat.py               # 智能对话 API / Chat API
-│   │   ├── models/                   # 数据库模型 / Database Models
-│   │   │   ├── node.py              # 节点模型 / Node Model
-│   │   │   ├── edge.py              # 边模型 / Edge Model
-│   │   │   └── map.py               # 地图模型 / Map Model
-│   │   ├── schemas/                  # Pydantic 模式 / Pydantic Schemas
-│   │   ├── services/                 # 业务逻辑服务 / Business Logic Services
-│   │   │   ├── graph_service.py     # 图算法和路径规划 / Graph Algorithm & Path Planning
-│   │   │   ├── vision_client.py     # 视觉识别服务 / Vision Recognition Service
-│   │   │   ├── navigation_client.py # 外部导航客户端 / External Navigation Client
-│   │   │   └── ai_service.py        # AI 服务 / AI Service
-│   │   ├── utils/
-│   │   │   └── navigation_text.py   # 导航文本生成 / Navigation Text Generation
-│   │   └── db/
-│   │       └── database.py          # 数据库连接 / Database Connection
-│   ├── data/                        # 数据存储 / Data Storage
-│   │   ├── campus_nav.db           # SQLite 数据库 / SQLite Database
-│   │   └── maps/                   # 地图图片存储 / Map Images Storage
-│   ├── scripts/                     # 数据导入脚本 / Data Import Scripts
-│   │   ├── import_map_data.py      # 地图数据导入 / Map Data Import
-│   │   ├── import_nodes_and_edges.py # 智能导入 / Smart Import
-│   │   └── export_node_coordinates.py # 坐标导出 / Coordinates Export
-│   ├── alembic/                     # 数据库迁移 / Database Migrations
-│   ├── requirements.txt             # Python 依赖 / Python Dependencies
-│   └── Dockerfile                   # Docker 配置 / Docker Configuration
+│   │   ├── main.py                     # FastAPI app entry point
+│   │   ├── core/config.py              # App configuration
+│   │   ├── api/endpoints/
+│   │   │   ├── navigation.py           # Navigation API
+│   │   │   ├── recognition.py          # Image recognition API
+│   │   │   ├── maps.py                 # Maps management API
+│   │   │   └── chat.py                 # Intelligent chat API
+│   │   ├── models/
+│   │   │   ├── node.py                 # Node model
+│   │   │   ├── edge.py                 # Edge model
+│   │   │   └── map.py                  # Map model
+│   │   ├── schemas/                    # Pydantic schemas
+│   │   ├── services/
+│   │   │   ├── graph_service.py        # Graph algorithms & path planning
+│   │   │   ├── vision_client.py        # Visual recognition service
+│   │   │   ├── navigation_client.py    # External navigation client
+│   │   │   └── ai_service.py           # AI service layer
+│   │   ├── utils/navigation_text.py    # Navigation instruction generation
+│   │   └── db/database.py             # Database connection
+│   ├── data/
+│   │   ├── campus_nav.db              # SQLite database
+│   │   └── maps/                      # Floor plan image storage
+│   ├── scripts/
+│   │   ├── import_map_data.py         # Single-file map data import
+│   │   ├── import_nodes_and_edges.py  # Smart graph import
+│   │   └── export_node_coordinates.py # Coordinate export utility
+│   ├── alembic/                       # Database migrations
+│   ├── requirements.txt
+│   └── Dockerfile
 │
-├── frontend/                        # 前端代码 / Frontend Code
+├── frontend/
 │   ├── src/
-│   │   ├── main.ts                  # 应用入口 / App Entry
-│   │   ├── App.vue                  # 根组件 / Root Component
-│   │   ├── api/
-│   │   │   └── index.ts            # API 客户端 / API Client
-│   │   ├── components/              # 可复用组件 / Reusable Components
-│   │   │   ├── Map3DInterface.vue # 3D 地图接口 / 3D Map Interface
-│   │   │   ├── AgentChat.vue      # 智能助手聊天 / Agent Chat
-│   │   │   ├── NavigationMap.vue   # 导航地图 / Navigation Map
-│   │   │   ├── MapCanvas.vue       # 地图画布 / Map Canvas
-│   │   │   └── ZoomableMapCanvas.vue # 可缩放地图画布 / Zoomable Map Canvas
-│   │   ├── views/                  # 页面视图 / Page Views
-│   │   │   ├── Home.vue           # 首页 / Home Page
-│   │   │   ├── Navigation.vue     # 导航页面 / Navigation Page
-│   │   │   ├── MapEditor.vue      # 地图编辑器 / Map Editor
-│   │   │   ├── Map3DView.vue      # 3D 地图视图 / 3D Map View
-│   │   │   └── Recognition.vue    # 图像识别页面 / Recognition Page
-│   │   ├── stores/                 # Pinia 状态管理 / Pinia State Management
-│   │   │   ├── navigation.ts      # 导航状态 / Navigation State
-│   │   │   └── editor.ts          # 编辑器状态 / Editor State
-│   │   ├── router/
-│   │   │   └── index.ts           # 路由配置 / Route Configuration
-│   │   └── assets/                 # 静态资源 / Static Assets
-│   │       └── maps/               # 地图图片 / Map Images
-│   ├── package.json                # Node.js 依赖 / Node.js Dependencies
-│   ├── vite.config.ts              # Vite 配置 / Vite Configuration
-│   └── tailwind.config.js          # Tailwind 配置 / Tailwind Configuration
+│   │   ├── main.ts
+│   │   ├── App.vue
+│   │   ├── api/index.ts               # Typed API client
+│   │   ├── components/
+│   │   │   ├── Map3DInterface.vue     # 3D map interface
+│   │   │   ├── AgentChat.vue          # AI chat assistant
+│   │   │   ├── NavigationMap.vue      # Navigation map view
+│   │   │   ├── MapCanvas.vue          # Map canvas renderer
+│   │   │   └── ZoomableMapCanvas.vue  # Pannable/zoomable canvas
+│   │   ├── views/
+│   │   │   ├── Home.vue
+│   │   │   ├── Navigation.vue
+│   │   │   ├── MapEditor.vue
+│   │   │   ├── Map3DView.vue
+│   │   │   └── Recognition.vue
+│   │   ├── stores/
+│   │   │   ├── navigation.ts
+│   │   │   └── editor.ts
+│   │   └── router/index.ts
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tailwind.config.js
 │
-├── image_data/                     # 图像数据集 / Image Dataset
-│   ├── L1/                        # 1 楼图像 / Floor 1 Images
-│   ├── L2/                        # 2 楼图像 / Floor 2 Images
-│   └── ...                        # 其他楼层 / Other Floors
-│
-├── chroma/                        # 向量数据库 / Vector Database
-├── project1230/                   # 项目数据 / Project Data
-├── key.py                        # API 密钥配置 / API Key Configuration
-└── README.md                      # 项目文档 / Project Documentation
+├── image_data/                        # Location image dataset
+│   ├── L1/                            # Floor 1 images
+│   ├── L2/                            # Floor 2 images
+│   └── ...
+├── chroma/                            # Vector database storage
+├── project1230/                       # Map graph data (JSON)
+├── key.py                             # API key configuration
+└── README.md
 ```
 
-## 快速开始
+---
 
-### 环境要求
+## 🚀 Quick Start
 
-- **Python 3.10+** (推荐 3.11)
-- **Node.js 18+** (推荐 20+)
-- **SQLite 3** (Python 内置，无需单独安装)
-- **可选**: CUDA 支持的 GPU (用于 CLIP 模型加速)
+### Prerequisites
 
-### 后端启动
+- **Python 3.10+** (3.11 recommended)
+- **Node.js 18+** (20+ recommended)
+- **SQLite 3** (bundled with Python — no separate install needed)
+- **Optional:** CUDA-capable GPU for accelerated CLIP inference
+
+### 1. Backend Setup
 
 ```bash
 cd backend
 
-# 创建虚拟环境
+# Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# 或 venv\Scripts\activate  # Windows
+source venv/bin/activate        # Linux/macOS
+# venv\Scripts\activate         # Windows
 
-# 安装依赖
+# Install dependencies
 pip install -r requirements.txt
 
-# 配置 API 密钥（必需）
-# 复制并编辑 key.py.example 为 key.py
+# Configure API keys
 cp key.py.example key.py
-# 编辑 key.py，配置 OpenAI API 密钥和 Google Maps API 密钥
+# Edit key.py — add your OpenAI and Google Maps API keys
 
-# 配置环境变量（可选）
-# 创建 .env 文件（如果需要自定义配置）
-# DATABASE_URL=sqlite+aiosqlite:///./data/campus_nav.db
-# 默认使用 SQLite，无需额外配置
+# Import map data (choose one approach)
+python scripts/import_map_data.py ../project1230/campus_map.json --clear          # single file
+python scripts/import_map_data_batch.py ../project1230/*.json --clear             # glob pattern
+python scripts/import_map_data_batch.py ../project1230/ --clear                   # entire directory
 
-# 导入地图数据
-# 方式1：导入单个文件
-python scripts/import_map_data.py ../project1230/campus_map.json --clear
-
-# 方式2：批量导入多个文件（推荐）
-python scripts/import_map_data_batch.py ../project1230/campus_map.json ../project1230/campus_map_add.json --clear
-
-# 方式3：导入目录下所有 JSON 文件
-python scripts/import_map_data_batch.py ../project1230/ --clear
-
-# 方式4：使用通配符导入
-python scripts/import_map_data_batch.py ../project1230/*.json --clear
-
-# 启动服务
+# Start the server
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 前端启动
+### 2. Frontend Setup
 
 ```bash
-cd frontend
-
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-
-# 或使用 pnpm（如果已安装）
-# pnpm install && pnpm dev
-```
-
-### 完整启动流程
-
-```bash
-# 1. 启动后端服务
-cd backend
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# 或 venv\Scripts\activate  # Windows
-pip install -r requirements.txt
-python scripts/import_map_data_batch.py ../project1230/ --clear
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-# 2. 新开终端启动前端服务
 cd frontend
 npm install
 npm run dev
 ```
 
-### 访问地址
+### 3. Access the App
 
-- **前端界面**: http://localhost:5173
-- **后端 API**: http://localhost:8000
-- **API 文档**: http://localhost:8000/docs (Swagger UI)
-- **健康检查**: http://localhost:8000/health
+| Service      | URL                          |
+| ------------ | ---------------------------- |
+| Frontend     | http://localhost:5173        |
+| Backend API  | http://localhost:8000        |
+| Swagger UI   | http://localhost:8000/docs   |
+| Health Check | http://localhost:8000/health |
 
-## API 接口
+---
 
-### 导航 API / Navigation API
+## 📡 API Reference
 
-- `POST /api/v1/navigation/route` - 计算导航路径 (Calculate navigation route)
-- `GET /api/v1/navigation/search` - 搜索节点 (Search nodes)
-- `GET /api/v1/navigation/nodes` - 获取所有节点 (Get all nodes)
-- `POST /api/v1/navigation/reload` - 重新加载图结构 (Reload graph structure)
+### Navigation
 
-### 图像识别 API / Recognition API
+| Method | Endpoint                    | Description                    |
+| ------ | --------------------------- | ------------------------------ |
+| `POST` | `/api/v1/navigation/route`  | Compute navigation route       |
+| `GET`  | `/api/v1/navigation/search` | Search nodes by keyword        |
+| `GET`  | `/api/v1/navigation/nodes`  | List all nodes                 |
+| `POST` | `/api/v1/navigation/reload` | Reload graph structure from DB |
 
-- `POST /api/v1/recognition/recognize` - 识别图片位置 (Recognize image location)
+### Image Recognition
 
-### 地图管理 API / Maps API
+| Method | Endpoint                        | Description                  |
+| ------ | ------------------------------- | ---------------------------- |
+| `POST` | `/api/v1/recognition/recognize` | Identify location from photo |
 
-- `POST /api/v1/maps/upload` - 上传底图 (Upload base map)
-- `GET /api/v1/maps/{floor}` - 获取楼层底图 (Get floor base map)
-- `GET /api/v1/maps/` - 获取所有底图 (Get all base maps)
-- `PUT /api/v1/maps/nodes/{id}/position` - 更新节点坐标 (Update node coordinates)
-- `PUT /api/v1/maps/nodes/batch-update` - 批量更新坐标 (Batch update coordinates)
+### Map Management
 
-### 智能对话 API / Chat API
+| Method | Endpoint                           | Description                    |
+| ------ | ---------------------------------- | ------------------------------ |
+| `POST` | `/api/v1/maps/upload`              | Upload a floor plan image      |
+| `GET`  | `/api/v1/maps/{floor}`             | Get floor plan by floor number |
+| `GET`  | `/api/v1/maps/`                    | List all floor plans           |
+| `PUT`  | `/api/v1/maps/nodes/{id}/position` | Update node coordinates        |
+| `PUT`  | `/api/v1/maps/nodes/batch-update`  | Batch update node coordinates  |
 
-- `POST /api/chat` - 智能对话 (Intelligent chat)
-- `GET /api/status` - 服务状态 (Service status)
-- `GET /api/config` - 配置信息 (Configuration info)
+### Intelligent Chat
 
-## 数据格式
+| Method | Endpoint      | Description                       |
+| ------ | ------------- | --------------------------------- |
+| `POST` | `/api/chat`   | Natural language navigation query |
+| `GET`  | `/api/status` | Service health status             |
+| `GET`  | `/api/config` | Runtime configuration info        |
 
-### 地图数据 JSON 格式 (campus_map.json)
+---
+
+## 🗃️ Data Format
+
+Map graphs are defined as JSON with `nodes` (locations) and `edges` (connections):
 
 ```json
 {
@@ -256,157 +246,97 @@ npm run dev
 }
 ```
 
-## 使用流程
+---
 
-### 1. 数据准备 / Data Preparation
+## 🧩 How It Works
 
-**导入地图数据**：
+### 1. Data Preparation
 
-- 使用 `scripts/import_map_data_batch.py` 批量导入 JSON 文件
-- 支持多个文件、目录导入和通配符匹配
-- 数据包含节点（位置）和边（连接关系）
+Use `scripts/import_map_data_batch.py` to bulk-import JSON map files. The script supports single files, directories, and glob patterns, and populates nodes and edges in the SQLite database.
 
-### 2. 地图配置 / Map Configuration
+### 2. Map Configuration
 
-**上传底图**：
+Upload floor plan images (PNG/JPG) through the Map Editor. Then drag nodes onto their correct positions — coordinates are stored as pixel offsets from the top-left origin.
 
-- 在地图编辑器页面上传各楼层的底图图片（PNG/JPG）
-- 系统自动识别图片尺寸并存储
+### 3. AI Model Setup
 
-**标注节点位置**：
+On first launch, the system automatically downloads the CLIP model (`openai/clip-vit-base-patch32`) and builds a ChromaDB vector index from the `image_data/` directory. For development without GPU access, enable **Mock Mode** to skip model loading and return randomized candidates.
 
-- 在编辑器中可视化拖拽节点到地图上的正确位置
-- 支持单个节点和批量更新坐标
-- 坐标基于像素位置（左上角为原点）
+### 4. Navigation
 
-### 3. AI 模型准备 / AI Model Preparation
+- **Basic**: Enter a destination keyword on the home screen — the A\* engine computes and displays the shortest route.
+- **AI Chat**: Ask in natural language (e.g., _"Where's the nearest printer?"_). The LLM calls the appropriate tool and returns a conversational response.
+- **Visual Localization**: Upload a photo — CLIP extracts features, ChromaDB retrieves the top-K most similar indexed locations.
 
-**图像识别设置**：
+---
 
-- 系统自动下载 CLIP 模型用于图像特征提取
-- 构建 ChromaDB 向量数据库存储位置特征
-- 支持 Mock 模式（开发测试用）
+## 🏗️ Architecture Decisions
 
-### 4. 使用导航 / Using Navigation
+**Why SQLite?** Zero-ops setup for campus scale. Easily migrated to PostgreSQL for larger deployments via Alembic.
 
-**基本导航**：
+**Why A\*?** Optimal for sparse campus graphs. The graph is loaded once into memory at startup for sub-millisecond query times.
 
-- 在首页输入目的地关键词
-- 系统计算并显示最短路径
-- 支持 2D 和 3D 地图视图
+**Why CLIP + ChromaDB?** CLIP provides strong zero-shot visual features without task-specific fine-tuning. ChromaDB handles approximate nearest-neighbor search efficiently in-process.
 
-**智能对话导航**：
+---
 
-- 使用智能助手进行自然语言查询
-- 支持复杂导航需求（如"去最近的咖啡店"）
-- 集成外部Google Map导航服务
+## 🚢 Deployment
 
-**视觉定位**：
+### Development
 
-- 上传环境照片进行位置识别
-- 返回多个候选位置供用户选择
+```bash
+# Backend with auto-reload
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-## 开发说明
+# Frontend with HMR
+cd frontend && npm run dev
+```
 
-### 添加新节点 / Add New Nodes
+### Production (recommended)
 
-1. 编辑 JSON 文件添加节点和边数据
-2. 运行导入脚本更新数据库
-3. 在地图编辑器中设置节点坐标
+- **Nginx** as reverse proxy with SSL termination
+- **Docker** containerization (Dockerfile included)
+- **Environment variables** for secrets (never commit `key.py`)
+- **PostgreSQL** if scaling beyond SQLite limits
+- **Redis** caching layer for graph queries
 
-### AI 识别模块 / AI Recognition Module
+### Performance Notes
 
-**当前实现**：
+- Graph structure is cached in memory at startup
+- Fully async I/O via FastAPI + SQLAlchemy async
+- ChromaDB vector search is in-process (no network hop)
+- Frontend uses virtual scrolling for large node lists
 
-- 使用 CLIP (openai/clip-vit-base-patch32) 提取图像特征
-- ChromaDB 向量数据库进行相似度检索
-- 支持 Top-K 候选位置返回
+---
 
-**Mock 模式**：
+## 🔧 Troubleshooting
 
-- 开发时可启用 Mock 模式跳过模型加载
-- 返回随机候选位置用于界面测试
+| Symptom                                   | Likely Cause                                     | Fix                                                                     |
+| ----------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| Backend fails to start                    | Missing API keys or wrong Python version         | Check `key.py` exists and Python ≥ 3.10                                 |
+| Frontend build fails                      | Node.js version or missing packages              | Ensure Node ≥ 18, delete `node_modules` and re-run `npm install`        |
+| Map not displaying                        | No floor plan uploaded or nodes lack coordinates | Upload a floor image in the Map Editor and set node positions           |
+| Recognition always returns wrong location | ChromaDB index not built                         | Ensure `image_data/` is populated and the backend ran the indexing step |
 
-### 智能对话功能 / Intelligent Chat Feature
+---
 
-**工具调用 / Tool Calling**：
+## 🛣️ Roadmap
 
-- 路径规划工具：计算导航路径
-- 节点搜索工具：查找位置信息
-- 外部导航工具：Google Maps 集成
+- [ ] FAISS integration for faster large-scale vector search
+- [ ] OCR-assisted localization from signage images
+- [ ] Offline PWA support for no-connectivity environments
+- [ ] WebSocket-based real-time multi-user navigation
 
-**对话流程**：
+---
 
-- 用户自然语言输入
-- LLM 理解意图并决定工具调用
-- 执行相应功能返回结果
-- 生成自然语言回复
+## 📄 License
 
-## 部署和扩展 / Deployment & Scaling
+MIT © Campus Indoor Navigation System contributors
 
-### 开发环境 / Development
+---
 
-- 使用 `uvicorn --reload` 自动重载后端代码
-- 前端使用 Vite 热重载开发服务器
-- 支持前后端分离开发和调试
+<div align="center">
 
-### 生产部署 / Production
+If this project helped you, consider giving it a ⭐
 
-**推荐配置**：
-
-- 使用 Nginx 作为反向代理
-- 配置 SSL 证书
-- 设置适当的环境变量
-- 考虑使用 Docker 容器化部署
-
-### 性能优化 / Performance Optimization
-
-- 图结构缓存到内存中
-- 异步 I/O 处理提高并发
-- ChromaDB 向量检索优化
-- 前端虚拟滚动处理大数据
-
-### 扩展性 / Scalability
-
-**数据库扩展**：
-
-- 可迁移到 PostgreSQL 支持更大规模
-- 添加 Redis 缓存层
-
-**AI 服务扩展**：
-
-- 图像识别服务可独立部署
-- 支持 GPU 加速推理
-- 考虑分布式向量检索
-
-## 故障排除 / Troubleshooting
-
-### 常见问题 / Common Issues
-
-**后端启动失败**：
-
-- 检查 Python 版本 (3.10+)
-- 确认依赖安装完成
-- 验证 API 密钥配置
-
-**前端构建失败**：
-
-- 检查 Node.js 版本 (18+)
-- 清理 node_modules 重新安装
-- 检查网络连接
-
-**地图不显示**：
-
-- 确认底图已上传
-- 检查节点坐标是否设置
-- 验证图片格式和大小
-
-填补方向参考：
-
-- 集成 CLIP 模型进行视觉特征提取
-- 使用 FAISS 进行向量检索
-- 添加 OCR 识别辅助
-
-## License
-
-MIT
+</div>
